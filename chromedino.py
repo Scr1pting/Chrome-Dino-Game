@@ -7,9 +7,12 @@ import threading
 
 import pygame
 
+from collision import check_collision
+
+
 pygame.init()
 
-# Global Constants
+# MARK: - Constants
 
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
@@ -21,37 +24,39 @@ Ico = pygame.image.load("assets/DinoWallpaper.png")
 pygame.display.set_icon(Ico)
 
 RUNNING = [
-    pygame.image.load(os.path.join("assets/Dino", "DinoRun1.png")),
-    pygame.image.load(os.path.join("assets/Dino", "DinoRun2.png")),
+    pygame.image.load(os.path.join("assets/dino", "DinoRun1.png")),
+    pygame.image.load(os.path.join("assets/dino", "DinoRun2.png")),
 ]
-JUMPING = pygame.image.load(os.path.join("assets/Dino", "DinoJump.png"))
+JUMPING = pygame.image.load(os.path.join("assets/dino", "DinoJump.png"))
 DUCKING = [
-    pygame.image.load(os.path.join("assets/Dino", "DinoDuck1.png")),
-    pygame.image.load(os.path.join("assets/Dino", "DinoDuck2.png")),
+    pygame.image.load(os.path.join("assets/dino", "DinoDuck1.png")),
+    pygame.image.load(os.path.join("assets/dino", "DinoDuck2.png")),
 ]
 
 SMALL_CACTUS = [
-    pygame.image.load(os.path.join("assets/Cactus", "SmallCactus1.png")),
-    pygame.image.load(os.path.join("assets/Cactus", "SmallCactus2.png")),
-    pygame.image.load(os.path.join("assets/Cactus", "SmallCactus3.png")),
+    pygame.image.load(os.path.join("assets/cactus", "SmallCactus1.png")),
+    pygame.image.load(os.path.join("assets/cactus", "SmallCactus2.png")),
+    pygame.image.load(os.path.join("assets/cactus", "SmallCactus3.png")),
 ]
 LARGE_CACTUS = [
-    pygame.image.load(os.path.join("assets/Cactus", "LargeCactus1.png")),
-    pygame.image.load(os.path.join("assets/Cactus", "LargeCactus2.png")),
-    pygame.image.load(os.path.join("assets/Cactus", "LargeCactus3.png")),
+    pygame.image.load(os.path.join("assets/cactus", "LargeCactus1.png")),
+    pygame.image.load(os.path.join("assets/cactus", "LargeCactus2.png")),
+    pygame.image.load(os.path.join("assets/cactus", "LargeCactus3.png")),
 ]
 
 BIRD = [
-    pygame.image.load(os.path.join("assets/Bird", "Bird1.png")),
-    pygame.image.load(os.path.join("assets/Bird", "Bird2.png")),
+    pygame.image.load(os.path.join("assets/bird", "Bird1.png")),
+    pygame.image.load(os.path.join("assets/bird", "Bird2.png")),
 ]
 
-CLOUD = pygame.image.load(os.path.join("assets/Other", "Cloud.png"))
+CLOUD = pygame.image.load(os.path.join("assets/other", "Cloud.png"))
 
-BG = pygame.image.load(os.path.join("assets/Other", "Track.png"))
+BG = pygame.image.load(os.path.join("assets/other", "Track.png"))
 
-FONT_COLOR=(0,0,0)
+FONT_COLOR=(0, 0, 0)
 
+
+# MARK: - Dinosaur
 class Dinosaur:
 
     X_POS = 80
@@ -126,15 +131,16 @@ class Dinosaur:
         SCREEN.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
 
 
+# MARK: - Cloud
 class Cloud:
     def __init__(self):
-        self.x = SCREEN_WIDTH + random.randint(800, 1000)
+        self.x = SCREEN_WIDTH + random.randint(0, SCREEN_WIDTH)
         self.y = random.randint(50, 100)
         self.image = CLOUD
         self.width = self.image.get_width()
 
     def update(self):
-        self.x -= game_speed
+        self.x -= 0.5 * game_speed
         if self.x < -self.width:
             self.x = SCREEN_WIDTH + random.randint(2500, 3000)
             self.y = random.randint(50, 100)
@@ -142,7 +148,7 @@ class Cloud:
     def draw(self, SCREEN):
         SCREEN.blit(self.image, (self.x, self.y))
 
-
+# MARK: - Obstacles
 class Obstacle:
     def __init__(self, image, type):
         self.image = image
@@ -172,7 +178,6 @@ class LargeCactus(Obstacle):
         super().__init__(image, self.type)
         self.rect.y = 300
 
-
 class Bird(Obstacle):
     BIRD_HEIGHTS = [250, 290, 320]
 
@@ -189,17 +194,18 @@ class Bird(Obstacle):
         self.index += 1
 
 
+# MARK: - Main
 def main():
     global game_speed, x_pos_bg, y_pos_bg, points, obstacles
     run = True
     clock = pygame.time.Clock()
     player = Dinosaur()
-    cloud = Cloud()
+    clouds = [Cloud() for _ in range(3)]
     game_speed = 20
     x_pos_bg = 0
     y_pos_bg = 380
     points = 0
-    font = pygame.font.Font("freesansbold.ttf", 20)
+    font = pygame.font.Font("assets/font/PressStart2p.ttf", 20)
     obstacles = []
     death_count = 0
     pause = False
@@ -287,15 +293,21 @@ def main():
         for obstacle in obstacles:
             obstacle.draw(SCREEN)
             obstacle.update()
-            if player.dino_rect.colliderect(obstacle.rect):
+            if check_collision(
+                player.image,
+                (player.dino_rect.x, player.dino_rect.y),
+                obstacle.image[0],
+                (obstacle.rect.x, obstacle.rect.y)
+            ):
                 pygame.time.delay(2000)
                 death_count += 1
                 menu(death_count)
 
         background()
 
-        cloud.draw(SCREEN)
-        cloud.update()
+        for cloud in clouds:
+            cloud.draw(SCREEN)
+            cloud.update()
 
         score()
 
@@ -303,6 +315,7 @@ def main():
         pygame.display.update()
 
 
+# MARK: - Menu
 def menu(death_count):
     global points
     global FONT_COLOR
