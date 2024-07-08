@@ -81,7 +81,7 @@ def main():
         player.draw(SCREEN)
         player.update(userInput)
 
-        if len(obstacles) < 2:
+        if len(obstacles) == 0:
             switch = random.randint(0, 2)
             if switch == 0:
                 obstacles.append(SmallCactus(SMALL_CACTUS))
