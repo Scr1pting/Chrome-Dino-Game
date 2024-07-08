@@ -9,6 +9,7 @@ class Dinosaur:
     Y_POS = 310
     Y_POS_DUCK = 340
     JUMP_VEL = 8.5
+    CYCLE_LENGTH = 12
 
     def __init__(self):
         self.duck_img = DUCKING
@@ -36,7 +37,7 @@ class Dinosaur:
         if self.dino_jump:
             self.jump()
 
-        if self.step_index >= 10:
+        if self.step_index >= self.CYCLE_LENGTH:
             self.step_index = 0
 
         if (userInput[pygame.K_UP] or userInput[pygame.K_SPACE]) and not self.dino_jump:
@@ -53,14 +54,14 @@ class Dinosaur:
             self.dino_jump = False
 
     def duck(self):
-        self.image = self.duck_img[self.step_index // 5]
+        self.image = self.duck_img[self.step_index // (self.CYCLE_LENGTH // 2)]
         self.rect = self.image.get_rect()
         self.rect.x = self.X_POS
         self.rect.y = self.Y_POS_DUCK
         self.step_index += 1
 
     def run(self):
-        self.image = self.run_imgs[self.step_index // 5]
+        self.image = self.run_imgs[self.step_index // (self.CYCLE_LENGTH // 2)]
         self.rect = self.image.get_rect()
         self.rect.x = self.X_POS
         self.rect.y = self.Y_POS

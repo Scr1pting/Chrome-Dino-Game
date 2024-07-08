@@ -8,7 +8,6 @@ import threading
 import pygame # type: ignore
 
 from settings import *
-from collision import check_collision
 
 from objects.obstacles import SmallCactus, LargeCactus, Bird
 from objects.dinosaur import Dinosaur

@@ -47,10 +47,12 @@ class Bird(Obstacle):
         self.index = 0
 
     def draw(self, SCREEN):
-        if self.index >= 9:
+        CYCLE_LENGTH = 20
+
+        if self.index >= CYCLE_LENGTH:
             self.index = 0
         
-        if self.index >= 5:
+        if self.index >= CYCLE_LENGTH // 2:
             self.image = self.images[0]
         else:
             self.image = self.images[1]
