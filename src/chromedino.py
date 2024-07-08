@@ -90,12 +90,13 @@ def main():
         player.draw(SCREEN)
         player.update(userInput)
 
-        if len(obstacles) == 0:
-            if random.randint(0, 2) == 0:
+        if len(obstacles) < 2:
+            switch = random.randint(0, 2)
+            if switch == 0:
                 obstacles.append(SmallCactus(SMALL_CACTUS))
-            elif random.randint(0, 2) == 1:
+            elif switch == 1:
                 obstacles.append(LargeCactus(LARGE_CACTUS))
-            elif random.randint(0, 2) == 2:
+            elif switch == 2:
                 obstacles.append(Bird(BIRD))
 
         for obstacle in obstacles:
