@@ -78,6 +78,9 @@ class Dinosaur:
 
     def dead(self):
         self.image = self.dead_img
+        self.rect.x = self.X_POS
+        if self.rect.y > self.Y_POS:
+            self.rect.y = self.Y_POS
 
     def draw(self, SCREEN):
         SCREEN.blit(self.image, (self.rect.x, self.rect.y))
