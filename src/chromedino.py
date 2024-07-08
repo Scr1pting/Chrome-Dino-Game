@@ -10,6 +10,7 @@ import pygame # type: ignore
 from settings import *
 from obstacles import SmallCactus, LargeCactus, Bird
 from collision import check_collision
+from dinosaur import Dinosaur
 
 
 pygame.init()
@@ -17,79 +18,6 @@ pygame.init()
 # MARK: - Constants
 
 # MARK: - Dinosaur
-class Dinosaur:
-
-    X_POS = 80
-    Y_POS = 310
-    Y_POS_DUCK = 340
-    JUMP_VEL = 8.5
-
-    def __init__(self):
-        self.duck_img = DUCKING
-        self.run_img = RUNNING
-        self.jump_img = JUMPING
-
-        self.dino_duck = False
-        self.dino_run = True
-        self.dino_jump = False
-
-        self.step_index = 0
-        self.jump_vel = self.JUMP_VEL
-        self.image = self.run_img[0]
-        self.dino_rect = self.image.get_rect()
-        self.dino_rect.x = self.X_POS
-        self.dino_rect.y = self.Y_POS
-
-    def update(self, userInput):
-        if self.dino_duck:
-            self.duck()
-        if self.dino_run:
-            self.run()
-        if self.dino_jump:
-            self.jump()
-
-        if self.step_index >= 10:
-            self.step_index = 0
-
-        if (userInput[pygame.K_UP] or userInput[pygame.K_SPACE]) and not self.dino_jump:
-            self.dino_duck = False
-            self.dino_run = False
-            self.dino_jump = True
-        elif userInput[pygame.K_DOWN] and not self.dino_jump:
-            self.dino_duck = True
-            self.dino_run = False
-            self.dino_jump = False
-        elif not (self.dino_jump or userInput[pygame.K_DOWN]):
-            self.dino_duck = False
-            self.dino_run = True
-            self.dino_jump = False
-
-    def duck(self):
-        self.image = self.duck_img[self.step_index // 5]
-        self.dino_rect = self.image.get_rect()
-        self.dino_rect.x = self.X_POS
-        self.dino_rect.y = self.Y_POS_DUCK
-        self.step_index += 1
-
-    def run(self):
-        self.image = self.run_img[self.step_index // 5]
-        self.dino_rect = self.image.get_rect()
-        self.dino_rect.x = self.X_POS
-        self.dino_rect.y = self.Y_POS
-        self.step_index += 1
-
-    def jump(self):
-        self.image = self.jump_img
-        if self.dino_jump:
-            self.dino_rect.y -= self.jump_vel * 4
-            self.jump_vel -= 0.8
-        if self.jump_vel < -self.JUMP_VEL:
-            self.dino_jump = False
-            self.jump_vel = self.JUMP_VEL
-
-    def draw(self, SCREEN):
-        SCREEN.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
-
 
 # MARK: - Cloud
 class Cloud:
@@ -100,16 +28,13 @@ class Cloud:
         self.width = self.image.get_width()
 
     def update(self):
-        self.x -= 0.5 * game_speed
+        self.x -= 0.3 * game_speed
         if self.x < -self.width:
             self.x = SCREEN_WIDTH + random.randint(2500, 3000)
             self.y = random.randint(50, 100)
 
     def draw(self, SCREEN):
         SCREEN.blit(self.image, (self.x, self.y))
-
-# MARK: - Obstacles
-
 
 
 # MARK: - Main
@@ -126,7 +51,6 @@ def main():
     font = pygame.font.Font(FONT_FAMILY, 20)
     obstacles = []
     death_count = 0
-    pause = False
 
     def score():
         global points, game_speed
@@ -139,7 +63,7 @@ def main():
             highscore = max(score_ints)
             if points > highscore:
                 highscore=points 
-            text = font.render(f"HI: {str(highscore).zfill(5)} {str(points).zfill(5)}", True, FONT_COLOR)
+            text = font.render(f"HI: {str(highscore).zfill(5)} {str(points).zfill(5)}", False, FONT_COLOR)
         textRect = text.get_rect()
         textRect.center = (900, 40)
         SCREEN.blit(text, textRect)
@@ -154,29 +78,6 @@ def main():
             x_pos_bg = 0
         x_pos_bg -= game_speed
 
-    def unpause():
-        nonlocal pause, run
-        pause = False
-        run = True
-
-    def paused():
-        nonlocal pause
-        pause = True
-        font = pygame.font.Font(FONT_FAMILY, 30)
-        text = font.render("Game Paused, Press 'u' to Unpause", True, FONT_COLOR)
-        textRect = text.get_rect()
-        textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT  // 3)
-        SCREEN.blit(text, textRect)
-        pygame.display.update()
-
-        while pause:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_u:
-                    unpause()
-
     while run:
         # print(player.dino_rect.y, end="\r")
         if obstacles:
@@ -186,15 +87,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
-                run = False
-                paused()
 
-        current_time = datetime.datetime.now().hour
-        if 7 < current_time < 19:
-            SCREEN.fill((255, 255, 255))
-        else:
-            SCREEN.fill((0, 0, 0))
+        SCREEN.fill((255, 255, 255))
         userInput = pygame.key.get_pressed()
 
         player.draw(SCREEN)
@@ -229,7 +123,7 @@ def main():
 
         score()
 
-        clock.tick(30)
+        clock.tick(60)
         pygame.display.update()
 
 
@@ -238,21 +132,17 @@ def menu(death_count):
     global points
     global FONT_COLOR
     run = True
+
     while run:
-        current_time = datetime.datetime.now().hour
-        if 7 < current_time < 19:
-            FONT_COLOR=(0,0,0)
-            SCREEN.fill((255, 255, 255))
-        else:
-            FONT_COLOR=(255,255,255)
-            SCREEN.fill((128, 128, 128))
+        FONT_COLOR = (83, 83, 83)
+        SCREEN.fill((255, 255, 255))
         font = pygame.font.Font(FONT_FAMILY, 20)
 
         if death_count == 0:
-            text = font.render("Press any Key to Start", True, FONT_COLOR)
+            text = font.render("Press any Key to Start", False, FONT_COLOR)
         elif death_count > 0:
-            text = font.render("Press any Key to Restart", True, FONT_COLOR)
-            score = font.render("Your Score: " + str(points), True, FONT_COLOR)
+            text = font.render("Press any Key to Restart", False, FONT_COLOR)
+            score = font.render("Your Score: " + str(points), False, FONT_COLOR)
             scoreRect = score.get_rect()
             scoreRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50)
             SCREEN.blit(score, scoreRect)
@@ -266,7 +156,7 @@ def menu(death_count):
                 score_ints = [int(x) for x in score.split()]  # Convert strings to ints
             highscore = max(score_ints)  # sum all elements of the list
             hs_score_text = font.render(
-                "High Score : " + str(highscore), True, FONT_COLOR
+                "High Score: " + str(highscore), False, FONT_COLOR
             )
             hs_score_rect = hs_score_text.get_rect()
             hs_score_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100)
