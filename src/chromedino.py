@@ -5,56 +5,16 @@ import os
 import random
 import threading
 
-import pygame
+import pygame # type: ignore
 
+from settings import *
+from obstacles import SmallCactus, LargeCactus, Bird
 from collision import check_collision
 
 
 pygame.init()
 
 # MARK: - Constants
-
-SCREEN_HEIGHT = 600
-SCREEN_WIDTH = 1100
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
-pygame.display.set_caption("Chrome Dino Runner")
-
-Ico = pygame.image.load("assets/DinoWallpaper.png")
-pygame.display.set_icon(Ico)
-
-RUNNING = [
-    pygame.image.load(os.path.join("assets/dino", "DinoRun1.png")),
-    pygame.image.load(os.path.join("assets/dino", "DinoRun2.png")),
-]
-JUMPING = pygame.image.load(os.path.join("assets/dino", "DinoJump.png"))
-DUCKING = [
-    pygame.image.load(os.path.join("assets/dino", "DinoDuck1.png")),
-    pygame.image.load(os.path.join("assets/dino", "DinoDuck2.png")),
-]
-
-SMALL_CACTUS = [
-    pygame.image.load(os.path.join("assets/cactus", "SmallCactus1.png")),
-    pygame.image.load(os.path.join("assets/cactus", "SmallCactus2.png")),
-    pygame.image.load(os.path.join("assets/cactus", "SmallCactus3.png")),
-]
-LARGE_CACTUS = [
-    pygame.image.load(os.path.join("assets/cactus", "LargeCactus1.png")),
-    pygame.image.load(os.path.join("assets/cactus", "LargeCactus2.png")),
-    pygame.image.load(os.path.join("assets/cactus", "LargeCactus3.png")),
-]
-
-BIRD = [
-    pygame.image.load(os.path.join("assets/bird", "Bird1.png")),
-    pygame.image.load(os.path.join("assets/bird", "Bird2.png")),
-]
-
-CLOUD = pygame.image.load(os.path.join("assets/other", "Cloud.png"))
-
-BG = pygame.image.load(os.path.join("assets/other", "Track.png"))
-
-FONT_COLOR=(0, 0, 0)
-
 
 # MARK: - Dinosaur
 class Dinosaur:
@@ -149,49 +109,7 @@ class Cloud:
         SCREEN.blit(self.image, (self.x, self.y))
 
 # MARK: - Obstacles
-class Obstacle:
-    def __init__(self, image, type):
-        self.image = image
-        self.type = type
-        self.rect = self.image[self.type].get_rect()
-        self.rect.x = SCREEN_WIDTH
 
-    def update(self):
-        self.rect.x -= game_speed
-        if self.rect.x < -self.rect.width:
-            obstacles.pop()
-
-    def draw(self, SCREEN):
-        SCREEN.blit(self.image[self.type], self.rect)
-
-
-class SmallCactus(Obstacle):
-    def __init__(self, image):
-        self.type = random.randint(0, 2)
-        super().__init__(image, self.type)
-        self.rect.y = 325
-
-
-class LargeCactus(Obstacle):
-    def __init__(self, image):
-        self.type = random.randint(0, 2)
-        super().__init__(image, self.type)
-        self.rect.y = 300
-
-class Bird(Obstacle):
-    BIRD_HEIGHTS = [250, 290, 320]
-
-    def __init__(self, image):
-        self.type = 0
-        super().__init__(image, self.type)
-        self.rect.y = random.choice(self.BIRD_HEIGHTS)
-        self.index = 0
-
-    def draw(self, SCREEN):
-        if self.index >= 9:
-            self.index = 0
-        SCREEN.blit(self.image[self.index // 5], self.rect)
-        self.index += 1
 
 
 # MARK: - Main
@@ -205,7 +123,7 @@ def main():
     x_pos_bg = 0
     y_pos_bg = 380
     points = 0
-    font = pygame.font.Font("assets/font/PressStart2p.ttf", 20)
+    font = pygame.font.Font(FONT_FAMILY, 20)
     obstacles = []
     death_count = 0
     pause = False
@@ -216,12 +134,12 @@ def main():
         if points % 100 == 0:
             game_speed += 1
         current_time = datetime.datetime.now().hour
-        with open("score.txt", "r") as f:
+        with open("../score.txt", "r") as f:
             score_ints = [int(x) for x in f.read().split()]  
             highscore = max(score_ints)
             if points > highscore:
                 highscore=points 
-            text = font.render("High Score: "+ str(highscore) + "  Points: " + str(points), True, FONT_COLOR)
+            text = font.render(f"HI: {str(highscore).zfill(5)} {str(points).zfill(5)}", True, FONT_COLOR)
         textRect = text.get_rect()
         textRect.center = (900, 40)
         SCREEN.blit(text, textRect)
@@ -244,7 +162,7 @@ def main():
     def paused():
         nonlocal pause
         pause = True
-        font = pygame.font.Font("freesansbold.ttf", 30)
+        font = pygame.font.Font(FONT_FAMILY, 30)
         text = font.render("Game Paused, Press 'u' to Unpause", True, FONT_COLOR)
         textRect = text.get_rect()
         textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT  // 3)
@@ -292,7 +210,7 @@ def main():
 
         for obstacle in obstacles:
             obstacle.draw(SCREEN)
-            obstacle.update()
+            obstacle.update(game_speed, obstacles)
             if check_collision(
                 player.image,
                 (player.dino_rect.x, player.dino_rect.y),
@@ -328,7 +246,7 @@ def menu(death_count):
         else:
             FONT_COLOR=(255,255,255)
             SCREEN.fill((128, 128, 128))
-        font = pygame.font.Font("freesansbold.ttf", 30)
+        font = pygame.font.Font(FONT_FAMILY, 20)
 
         if death_count == 0:
             text = font.render("Press any Key to Start", True, FONT_COLOR)
@@ -338,10 +256,10 @@ def menu(death_count):
             scoreRect = score.get_rect()
             scoreRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50)
             SCREEN.blit(score, scoreRect)
-            f = open("score.txt", "a")
+            f = open("../score.txt", "a")
             f.write(str(points) + "\n")
             f.close()
-            with open("score.txt", "r") as f:
+            with open("../score.txt", "r") as f:
                 score = (
                     f.read()
                 )  # Read all file in case values are not on a single line

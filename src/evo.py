@@ -21,5 +21,5 @@ def crossbreed(parent1, parent2):
 def mutate(chromosome):
     chromosome[random.randint(0, 2)] += np.random.randn()
 
-def breed():
+# def breed():
     
