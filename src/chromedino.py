@@ -102,7 +102,10 @@ def main():
         for obstacle in obstacles:
             obstacle.draw(SCREEN)
             obstacle.update(game_speed, obstacles)
-            if obstacle.rect.colliderect(player.dino_rect):
+
+            print(obstacle, end="\r")
+
+            if pygame.sprite.collide_mask(player, obstacle):
                 player.dead()
                 is_dead = True
                 death_count += 1
@@ -135,10 +138,10 @@ def menu(death_count):
     run = True
 
     with open("../highscore.txt", "r") as f:
-        text = f.read().strip()
+        raw_highscore = f.read().strip()
         try:
-            highscore = int(f.read())
-        except ValueError:
+            highscore = int(raw_highscore)
+        except:
             highscore = 0
 
     while run:
@@ -164,7 +167,7 @@ def menu(death_count):
             hs_score_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100)
             SCREEN.blit(hs_score_text, hs_score_rect)
         
-        textRect = text.get_rect()
+        textRect = text.get_rect() 
         textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         SCREEN.blit(text, textRect)
         SCREEN.blit(RUNNING[0], (SCREEN_WIDTH // 2 - 20, SCREEN_HEIGHT // 2 - 140))
