@@ -21,7 +21,7 @@ pygame.init()
 
 # MARK: - Main
 def main():
-    global game_speed, x_pos_bg, y_pos_bg, points, obstacles
+    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, highscore
     run = True
     clock = pygame.time.Clock()
     player = Dinosaur()
@@ -29,23 +29,31 @@ def main():
     game_speed = 20
     x_pos_bg = 0
     y_pos_bg = 380
+
     points = 0
+    highscore = 0  
+
+    with open("../highscore.txt", "r") as f:
+        highscore = int(f.read())
+
     font = pygame.font.Font(FONT_FAMILY, 20)
     obstacles = []
     death_count = 0
 
     def score():
-        global points, game_speed
+        global points, game_speed, highscore
         points += 1
+
         if points % 100 == 0:
             game_speed += 1
-        current_time = datetime.datetime.now().hour
-        with open("../score.txt", "r") as f:
-            score_ints = [int(x) for x in f.read().split()]  
-            highscore = max(score_ints)
+        
+        with open("../highscore.txt", "w") as f:
             if points > highscore:
-                highscore=points 
+                highscore = points
+                f.write(str(points))
+            
             text = font.render(f"HI: {str(highscore).zfill(5)} {str(points).zfill(5)}", False, FONT_COLOR)
+        
         textRect = text.get_rect()
         textRect.center = (900, 40)
         SCREEN.blit(text, textRect)
@@ -93,7 +101,7 @@ def main():
                 obstacle.image[0],
                 (obstacle.rect.x, obstacle.rect.y)
             ):
-                pygame.time.delay(2000)
+                pygame.time.delay(3000)
                 death_count += 1
                 menu(death_count)
 
@@ -105,7 +113,7 @@ def main():
 
         score()
 
-        clock.tick(60)
+        clock.tick(30)
         pygame.display.update()
 
 
@@ -128,26 +136,20 @@ def menu(death_count):
             scoreRect = score.get_rect()
             scoreRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50)
             SCREEN.blit(score, scoreRect)
-            f = open("../score.txt", "a")
-            f.write(str(points) + "\n")
-            f.close()
-            with open("../score.txt", "r") as f:
-                score = (
-                    f.read()
-                )  # Read all file in case values are not on a single line
-                score_ints = [int(x) for x in score.split()]  # Convert strings to ints
-            highscore = max(score_ints)  # sum all elements of the list
+
             hs_score_text = font.render(
-                "High Score: " + str(highscore), False, FONT_COLOR
+                f"High Score: {highscore}", False, FONT_COLOR
             )
             hs_score_rect = hs_score_text.get_rect()
             hs_score_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100)
             SCREEN.blit(hs_score_text, hs_score_rect)
+        
         textRect = text.get_rect()
         textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         SCREEN.blit(text, textRect)
         SCREEN.blit(RUNNING[0], (SCREEN_WIDTH // 2 - 20, SCREEN_HEIGHT // 2 - 140))
         pygame.display.update()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
