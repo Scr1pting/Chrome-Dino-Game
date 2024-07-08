@@ -21,15 +21,18 @@ pygame.init()
 
 # MARK: - Main
 def main():
-    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, highscore
+    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, highscore, distance
     run = True
     clock = pygame.time.Clock()
+
     player = Dinosaur()
     clouds = [Cloud() for _ in range(3)]
-    game_speed = 20
+    
+    game_speed = 10
     x_pos_bg = 0
     y_pos_bg = 380
 
+    distance = 0
     points = 0
     highscore = 0  
 
@@ -41,8 +44,11 @@ def main():
     death_count = 0
 
     def score():
-        global points, game_speed, highscore
-        points += 1
+        global points, distance, game_speed, highscore
+        distance += 1
+
+        if distance % 5:
+            points += 1
 
         if points % 100 == 0:
             game_speed += 1
@@ -50,9 +56,9 @@ def main():
         with open("../highscore.txt", "w") as f:
             if points > highscore:
                 highscore = points
-                f.write(str(points))
+                f.write(str(highscore))
             
-            text = font.render(f"HI: {str(highscore).zfill(5)} {str(points).zfill(5)}", False, FONT_COLOR)
+        text = font.render(f"HI: {str(highscore).zfill(5)} {str(points).zfill(5)}", False, FONT_COLOR)
         
         textRect = text.get_rect()
         textRect.center = (900, 40)
@@ -70,9 +76,9 @@ def main():
 
     while run:
         # print(player.dino_rect.y, end="\r")
-        if obstacles:
-            # print(obstacles[0].rect.y, end="\r")
-            print(obstacles[0].rect.x, end="\r")
+        # if obstacles:
+        #     # print(obstacles[0].rect.y, end="\r")
+        #     print(obstacles[0].rect.x, end="\r")
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -101,7 +107,7 @@ def main():
                 obstacle.image[0],
                 (obstacle.rect.x, obstacle.rect.y)
             ):
-                pygame.time.delay(3000)
+                pygame.time.delay(2000)
                 death_count += 1
                 menu(death_count)
 
@@ -113,7 +119,7 @@ def main():
 
         score()
 
-        clock.tick(30)
+        clock.tick(60)
         pygame.display.update()
 
 
