@@ -12,6 +12,7 @@ class Dinosaur:
         self.duck_img = DUCKING
         self.run_img = RUNNING
         self.jump_img = JUMPING
+        self.dead_img = DEAD
 
         self.dino_duck = False
         self.dino_run = True
@@ -65,11 +66,14 @@ class Dinosaur:
     def jump(self):
         self.image = self.jump_img
         if self.dino_jump:
-            self.dino_rect.y -= self.jump_vel * 4 * 30/FRAME_RATE
-            self.jump_vel -= 0.8 * 30/FRAME_RATE
+            self.dino_rect.y -= self.jump_vel * 2.5
+            self.jump_vel -= 0.5
         if self.jump_vel < -self.JUMP_VEL:
             self.dino_jump = False
             self.jump_vel = self.JUMP_VEL
+
+    def dead(self):
+        self.image = self.dead_img
 
     def draw(self, SCREEN):
         SCREEN.blit(self.image, (self.dino_rect.x, self.dino_rect.y))

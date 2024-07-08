@@ -26,7 +26,7 @@ DUCKING = [
     pygame.image.load(os.path.join("../assets/dino", "DinoDuck1.png")),
     pygame.image.load(os.path.join("../assets/dino", "DinoDuck2.png")),
 ]
-
+DEAD = pygame.image.load(os.path.join("../assets/dino", "DinoDead.png"))
 SMALL_CACTUS = [
     pygame.image.load(os.path.join("../assets/cactus", "SmallCactus1.png")),
     pygame.image.load(os.path.join("../assets/cactus", "SmallCactus2.png")),
@@ -48,4 +48,5 @@ CLOUD = pygame.image.load(os.path.join("../assets/other", "Cloud.png"))
 BG = pygame.image.load(os.path.join("../assets/other", "Track.png"))
 
 FONT_COLOR = (83, 83, 83)
+FONT_COLOR_LIGHT = (117, 117, 117)
 FONT_FAMILY = "../assets/font/PressStart2p.ttf"

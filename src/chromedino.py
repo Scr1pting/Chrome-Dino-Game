@@ -43,22 +43,31 @@ def main():
         global points, distance, game_speed, highscore
         distance += game_speed
 
-        if distance % 100 == 0:
+        if distance % 50 == 0:
             points += 1
 
-        if distance % 3000 == 0:
+        if distance % 1000 == 0:
             game_speed += 1
         
-        with open("../highscore.txt", "a") as f:
-            if points > highscore:
+        with open("../highscore.txt", "w") as f:
+            if points >= highscore:
                 highscore = points
                 f.write(str(highscore))
+            f.close()
             
-        text = font.render(f"HI: {str(highscore).zfill(5)} {str(points).zfill(5)}", False, FONT_COLOR)
-        
-        textRect = text.get_rect()
-        textRect.center = (900, 40)
-        SCREEN.blit(text, textRect)
+        text1 = font.render(f"HI: {str(5).zfill(5)} ", False, FONT_COLOR_LIGHT)
+        text2 = font.render(str(points).zfill(5), False, FONT_COLOR)
+
+        x_pos, y_pos = (760, 40)
+
+        # Get the width of the first text part to calculate the starting position of the second part
+        text_width, _ = text1.get_size()
+        x_pos_part2 = x_pos + text_width
+
+        # Blit both parts onto the screen
+        SCREEN.blit(text1, (x_pos, y_pos))
+        SCREEN.blit(text2, (x_pos_part2, y_pos))
+
 
     def background():
         global x_pos_bg, y_pos_bg
@@ -71,14 +80,14 @@ def main():
         x_pos_bg -= game_speed
 
     while run:
+        is_dead = False
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
         SCREEN.fill((255, 255, 255))
         userInput = pygame.key.get_pressed()
-
-        player.draw(SCREEN)
         player.update(userInput)
 
         if len(obstacles) == 0:
@@ -93,26 +102,28 @@ def main():
         for obstacle in obstacles:
             obstacle.draw(SCREEN)
             obstacle.update(game_speed, obstacles)
-            if check_collision(
-                player.image,
-                (player.dino_rect.x, player.dino_rect.y),
-                obstacle.image[0],
-                (obstacle.rect.x, obstacle.rect.y)
-            ):
-                pygame.time.delay(2000)
+            if obstacle.rect.colliderect(player.dino_rect):
+                player.dead()
+                is_dead = True
                 death_count += 1
-                menu(death_count)
+
+        player.draw(SCREEN)
 
         background()
 
         for cloud in clouds:
-            cloud.draw(SCREEN)
             cloud.update(game_speed)
+            cloud.draw(SCREEN)
 
         score()
 
-        clock.tick(FRAME_RATE)
         pygame.display.update()
+
+        if is_dead:
+            pygame.time.delay(2000)
+            menu(death_count)
+
+        clock.tick(FRAME_RATE)
 
 
 # MARK: Menu
