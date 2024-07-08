@@ -8,33 +8,15 @@ import threading
 import pygame # type: ignore
 
 from settings import *
-from obstacles import SmallCactus, LargeCactus, Bird
 from collision import check_collision
-from dinosaur import Dinosaur
+
+from objects.obstacles import SmallCactus, LargeCactus, Bird
+from objects.dinosaur import Dinosaur
+from objects.cloud import Cloud
 
 
 pygame.init()
 
-# MARK: - Constants
-
-# MARK: - Dinosaur
-
-# MARK: - Cloud
-class Cloud:
-    def __init__(self):
-        self.x = SCREEN_WIDTH + random.randint(0, SCREEN_WIDTH)
-        self.y = random.randint(50, 100)
-        self.image = CLOUD
-        self.width = self.image.get_width()
-
-    def update(self):
-        self.x -= 0.3 * game_speed
-        if self.x < -self.width:
-            self.x = SCREEN_WIDTH + random.randint(2500, 3000)
-            self.y = random.randint(50, 100)
-
-    def draw(self, SCREEN):
-        SCREEN.blit(self.image, (self.x, self.y))
 
 
 # MARK: - Main
@@ -119,7 +101,7 @@ def main():
 
         for cloud in clouds:
             cloud.draw(SCREEN)
-            cloud.update()
+            cloud.update(game_speed)
 
         score()
 
