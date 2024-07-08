@@ -47,6 +47,8 @@ CLOUD = pygame.image.load(os.path.join("../assets/other", "Cloud.png"))
 
 BG = pygame.image.load(os.path.join("../assets/other", "Track.png"))
 
+BACKGROUND_COLOR = (247, 247, 247)
+
 FONT_COLOR = (83, 83, 83)
 FONT_COLOR_LIGHT = (117, 117, 117)
 FONT_FAMILY = "../assets/font/PressStart2p.ttf"

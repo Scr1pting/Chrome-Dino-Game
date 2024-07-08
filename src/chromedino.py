@@ -85,7 +85,9 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        SCREEN.fill((255, 255, 255))
+        SCREEN.fill(BACKGROUND_COLOR)
+        background()
+
         userInput = pygame.key.get_pressed()
         player.update(userInput)
 
@@ -102,16 +104,12 @@ def main():
             obstacle.draw(SCREEN)
             obstacle.update(game_speed, obstacles)
 
-            print(obstacle, end="\r")
-
             if pygame.sprite.collide_mask(player, obstacle):
                 player.dead()
                 is_dead = True
                 death_count += 1
 
         player.draw(SCREEN)
-
-        background()
 
         for cloud in clouds:
             cloud.update(game_speed)
@@ -144,8 +142,7 @@ def menu(death_count):
             highscore = 0
 
     while run:
-        FONT_COLOR = (83, 83, 83)
-        SCREEN.fill((255, 255, 255))
+        SCREEN.fill(BACKGROUND_COLOR)
         font = pygame.font.Font(FONT_FAMILY, 20)
 
         if death_count == 0:
