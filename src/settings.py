@@ -2,13 +2,19 @@ import pygame # type: ignore
 import os
 
 
+FRAME_RATE = 60
+
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+SCREEN = pygame.display.set_mode(
+    size=(SCREEN_WIDTH, SCREEN_HEIGHT),
+    flags=pygame.SCALED,
+    vsync=1
+)
 
 pygame.display.set_caption("Chrome Dino Runner")
 
-Ico = pygame.image.load("../assets/DinoWallpaper.png")
+Ico = pygame.image.load("../assets/dino/DinoJump.png")
 pygame.display.set_icon(Ico)
 
 RUNNING = [

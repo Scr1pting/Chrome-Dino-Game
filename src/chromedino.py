@@ -19,9 +19,9 @@ pygame.init()
 
 
 
-# MARK: - Main
+# MARK: Main
 def main():
-    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, highscore, distance
+    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, distance
     run = True
     clock = pygame.time.Clock()
 
@@ -34,10 +34,6 @@ def main():
 
     distance = 0
     points = 0
-    highscore = 0  
-
-    with open("../highscore.txt", "r") as f:
-        highscore = int(f.read())
 
     font = pygame.font.Font(FONT_FAMILY, 20)
     obstacles = []
@@ -45,15 +41,15 @@ def main():
 
     def score():
         global points, distance, game_speed, highscore
-        distance += 1
+        distance += game_speed
 
-        if distance % 5:
+        if distance % 100 == 0:
             points += 1
 
-        if points % 100 == 0:
+        if distance % 3000 == 0:
             game_speed += 1
         
-        with open("../highscore.txt", "w") as f:
+        with open("../highscore.txt", "a") as f:
             if points > highscore:
                 highscore = points
                 f.write(str(highscore))
@@ -75,11 +71,6 @@ def main():
         x_pos_bg -= game_speed
 
     while run:
-        # print(player.dino_rect.y, end="\r")
-        # if obstacles:
-        #     # print(obstacles[0].rect.y, end="\r")
-        #     print(obstacles[0].rect.x, end="\r")
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -120,15 +111,24 @@ def main():
 
         score()
 
-        clock.tick(60)
+        clock.tick(FRAME_RATE)
         pygame.display.update()
 
 
-# MARK: - Menu
+# MARK: Menu
 def menu(death_count):
-    global points
+    global points, highscore
     global FONT_COLOR
+
+    highscore = 0
     run = True
+
+    with open("../highscore.txt", "r") as f:
+        text = f.read().strip()
+        try:
+            highscore = int(f.read())
+        except ValueError:
+            highscore = 0
 
     while run:
         FONT_COLOR = (83, 83, 83)
@@ -139,7 +139,8 @@ def menu(death_count):
             text = font.render("Press any Key to Start", False, FONT_COLOR)
         elif death_count > 0:
             text = font.render("Press any Key to Restart", False, FONT_COLOR)
-            score = font.render("Your Score: " + str(points), False, FONT_COLOR)
+            score = font.render(f"Your Score: {points}", False, FONT_COLOR)
+
             scoreRect = score.get_rect()
             scoreRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50)
             SCREEN.blit(score, scoreRect)
@@ -147,6 +148,7 @@ def menu(death_count):
             hs_score_text = font.render(
                 f"High Score: {highscore}", False, FONT_COLOR
             )
+
             hs_score_rect = hs_score_text.get_rect()
             hs_score_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100)
             SCREEN.blit(hs_score_text, hs_score_rect)
