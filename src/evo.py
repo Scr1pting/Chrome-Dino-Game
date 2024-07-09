@@ -56,6 +56,9 @@ def prediction(
 
 
 # MARK: Evolution
+def fitness(genome: Genome) -> float:
+    
+
 def crossbreed(parent1: Genome, parent2: Genome) -> Genome:
     all_weights = []
     all_biases = []
@@ -72,7 +75,6 @@ def crossbreed(parent1: Genome, parent2: Genome) -> Genome:
 
     return Genome(all_weights, all_biases)
     
-
 def mutate(genome: Genome) -> Genome:
     for i, weights in enumerate(genome.all_weights):
         for row in range(len(weights)):
@@ -87,5 +89,10 @@ def mutate(genome: Genome) -> Genome:
     
     return genome
     
-# def breed():
+def breed():
 
+
+
+if __name__ == "__main__":
+    genome1 = create_genome()
+    print(genome1.all_weights)
