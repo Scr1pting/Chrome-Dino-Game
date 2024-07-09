@@ -14,7 +14,7 @@ SCREEN = pygame.display.set_mode(
 
 pygame.display.set_caption("Chrome Dino Runner")
 
-Ico = pygame.image.load("../assets/dino/DinoJump.png")
+Ico = pygame.image.load("../assets/other/AppIcon.png")
 pygame.display.set_icon(Ico)
 
 RUNNING = [

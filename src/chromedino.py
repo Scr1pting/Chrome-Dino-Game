@@ -100,7 +100,7 @@ def menu():
     textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
     SCREEN.blit(text, textRect)
     # Image
-    SCREEN.blit(JUMPING, (SCREEN_WIDTH // 2 - 20, SCREEN_HEIGHT // 2 - 140))
+    SCREEN.blit(RUNNING[1], (SCREEN_WIDTH // 2 - 20, SCREEN_HEIGHT // 2 - 140))
     pygame.display.update()
 
     while True:
