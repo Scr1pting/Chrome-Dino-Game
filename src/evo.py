@@ -25,7 +25,6 @@ def create_genome() -> Genome:
     # Weights are initialized with a normal distribution
     all_weights = [
         np.random.normal(size=(INPUT_SIZE, LAYER_SIZE)),
-        np.random.normal(size=(LAYER_SIZE, INPUT_SIZE)),
         *np.random.normal(size=(
             HIDDEN_LAYERS - 1,
             LAYER_SIZE,
