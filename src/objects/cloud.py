@@ -4,18 +4,18 @@ from settings import *
 
 
 class Cloud:
-    def __init__(self):
-        self.x = SCREEN_WIDTH + random.randint(0, SCREEN_WIDTH)
-        self.y = random.randint(50, 100)
-        self.z = 4
+    def __init__(self, x):
+        self.x = x
+        self.y = random.randint(160, 190)
+        self.slowness = 0.15
         self.image = CLOUD
         self.width = self.image.get_width()
 
-    def update(self, game_speed, clouds, i):
-        self.x -= game_speed/self.z
+    def update(self, game_speed, prev_cloud):
+        self.x -= game_speed * self.slowness
         if self.x < -self.width:
-            self.x = clouds[(i+2)%3].x +  random.randint(1500, 2000)
-            self.y = random.randint(50, 100)
+            self.x = prev_cloud.x + random.randint(500, 700)
+            self.y = random.randint(80, 130)
 
     def draw(self, SCREEN):
         SCREEN.blit(self.image, (self.x, self.y))

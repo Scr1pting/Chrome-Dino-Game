@@ -133,10 +133,10 @@ def restart_screen():
 
 # MARK: Main
 def main():
-    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, distance, is_dead
+    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, distance, is_dead, nextDistancePerGenerate
     
     def start():
-        global game_speed, obstacles, distance, points, is_dead
+        global game_speed, obstacles, distance, points, is_dead, nextDistancePerGenerate
 
         game_speed = 10
 
@@ -145,20 +145,19 @@ def main():
         distance = 0
         points = 0
         is_dead = False
+
         nextDistancePerGenerate = 0
 
     run = True
     clock = pygame.time.Clock()
 
     player = Dinosaur()
-    clouds = [Cloud() for _ in range(3)]
+    clouds = [Cloud(x=600*i) for i in range(2)]
 
     x_pos_bg = 0
     y_pos_bg = 380
     is_dead = True
     
-   
-
     menu()
     start()
 
@@ -176,9 +175,9 @@ def main():
         player.update(userInput)
         
         # Object generation
-        if(distance>nextDistancePerGenerate):
+        if(distance > nextDistancePerGenerate):
             generateObjects()
-            nextDistancePerGenerate+=random.randint(450, 900)
+            nextDistancePerGenerate += random.randint(450, 900)
         
         # Obstacles
         for obstacle in obstacles:
@@ -195,16 +194,14 @@ def main():
         player.draw(SCREEN)
 
         # Draw call for clouds
-        i = 0
-        for cloud in clouds:
-            cloud.update(game_speed,clouds,i)
+        for index, cloud in enumerate(clouds):
+            prev_cloud = clouds[index - 1]
+            cloud.update(game_speed, prev_cloud)
             cloud.draw(SCREEN)
-            i+=1
         
         # Update score
         score()
         
-
         if is_dead: 
             restart_screen()
 
