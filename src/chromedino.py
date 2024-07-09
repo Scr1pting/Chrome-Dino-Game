@@ -145,6 +145,7 @@ def main():
         distance = 0
         points = 0
         is_dead = False
+        nextDistancePerGenerate = 0
 
     run = True
     clock = pygame.time.Clock()
@@ -156,7 +157,7 @@ def main():
     y_pos_bg = 380
     is_dead = True
     
-    nextDistancePerGenerate = 400
+   
 
     menu()
     start()
