@@ -14,7 +14,7 @@ class Obstacle:
     def update(self, game_speed, obstacles):
         self.rect.x -= game_speed
         if self.rect.x < -self.rect.width:
-            obstacles.pop()
+            obstacles.pop(0)
 
     def draw(self, SCREEN):
         SCREEN.blit(self.image, self.rect)
