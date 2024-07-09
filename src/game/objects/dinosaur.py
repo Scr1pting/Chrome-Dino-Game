@@ -1,6 +1,6 @@
 from settings import *
 
-import pygame # type: ignore
+import pygame
 
 
 class Dinosaur:

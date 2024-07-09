@@ -47,16 +47,25 @@ def create_genome() -> Genome:
 def activation(input_values: np.ndarray) -> np.ndarray:
     return 1 / (1 + np.exp(-input_values))
 
-def prediction(
+def layer_prediction(
         input_values: np.ndarray,
         weights: np.ndarray,
         biases: np.ndarray
     ) -> np.ndarray:
     return activation(weights @ input_values + biases)
 
+def predict(genome: Genome, input_values: np.ndarray) -> np.ndarray:
+    for i in range(len(genome.all_weights)):
+        input_values = layer_prediction(
+            input_values,
+            genome.all_weights[i],
+            genome.all_biases[i]
+        )
+    return input_values
+
 
 # MARK: Evolution
-def fitness(genome: Genome) -> float:
+# def fitness(genome: Genome) -> float:
     
 
 def crossbreed(parent1: Genome, parent2: Genome) -> Genome:
@@ -89,7 +98,7 @@ def mutate(genome: Genome) -> Genome:
     
     return genome
     
-def breed():
+# def breed():
 
 
 
