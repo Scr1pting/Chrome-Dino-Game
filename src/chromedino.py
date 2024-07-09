@@ -180,24 +180,24 @@ def main():
             nextDistancePerGenerate += random.randint(450, 900)
         
         # Obstacles
-        for obstacle in obstacles:
+        for obstacle in obstacles.copy():
             # Draw call
-            obstacle.draw(SCREEN)
             obstacle.update(game_speed, obstacles)
+            obstacle.draw(SCREEN)
             
             # Collision detection
             if pygame.sprite.collide_mask(player, obstacle):
                 player.dead()
                 is_dead = True
         
-        # Draw call for player
-        player.draw(SCREEN)
-
         # Draw call for clouds
         for index, cloud in enumerate(clouds):
             prev_cloud = clouds[index - 1]
             cloud.update(game_speed, prev_cloud)
             cloud.draw(SCREEN)
+
+        # Draw call for player
+        player.draw(SCREEN)
         
         # Update score
         score()
