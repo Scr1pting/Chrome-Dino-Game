@@ -155,6 +155,8 @@ def main():
     x_pos_bg = 0
     y_pos_bg = 380
     is_dead = True
+    
+    nextDistancePerGenerate = 400
 
     menu()
     start()
@@ -171,18 +173,11 @@ def main():
         # Get input
         userInput = pygame.key.get_pressed()
         player.update(userInput)
-
-        if len(obstacles) == 0:
-            switch = random.randint(0, 2)
-            if switch == 0:
-                obstacles.append(SmallCactus(SMALL_CACTUS))
-            elif switch == 1:
-                obstacles.append(LargeCactus(LARGE_CACTUS))
-            elif switch == 2:
-                obstacles.append(Bird(BIRD))
-       
-        if len(obstacles) == 0:
+        
+        # Object generation
+        if(distance>nextDistancePerGenerate):
             generateObjects()
+            nextDistancePerGenerate+=random.randint(450, 900)
         
         # Obstacles
         for obstacle in obstacles:
@@ -199,12 +194,15 @@ def main():
         player.draw(SCREEN)
 
         # Draw call for clouds
+        i = 0
         for cloud in clouds:
-            cloud.update(game_speed)
+            cloud.update(game_speed,clouds,i)
             cloud.draw(SCREEN)
+            i+=1
         
         # Update score
         score()
+        
 
         if is_dead: 
             restart_screen()
