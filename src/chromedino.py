@@ -151,7 +151,7 @@ def main():
             menu(death_count)
 
         clock.tick(FRAME_RATE)
-        frame
+        frame+=1
 
 
 # MARK: Menu
