@@ -27,15 +27,16 @@ def score():
     if distance % 50 == 0:
         points += 1
 
-    if distance % 1000 == 0:
+    if distance % 700 == 0:
         game_speed += 1
     
-    with open("../highscore.txt", "w") as f:
-        if points >= highscore:
-            highscore = points
+    if points >= highscore:
+        highscore = points
+
+        with open("../highscore.txt", "w") as f:
             f.write(str(highscore))
         
-    text1 = font.render(f"HI: {str(5).zfill(5)} ", False, FONT_COLOR_LIGHT)
+    text1 = font.render(f"HI: {str(highscore).zfill(5)} ", False, FONT_COLOR_LIGHT)
     text2 = font.render(str(points).zfill(5), False, FONT_COLOR)
 
     x_pos, y_pos = (760, 40)
@@ -59,23 +60,6 @@ def background():
         x_pos_bg = 0
     x_pos_bg -= game_speed
 
-
-def restart_screen():
-    font = pygame.font.Font(FONT_FAMILY, 25)
-
-    text = font.render("G A M E  O V E R", False, FONT_COLOR)
-    textRect = text.get_rect() 
-    textRect.center = (SCREEN_WIDTH // 2, 210)
-    SCREEN.blit(text, textRect)
-
-    reset_img = RESET
-    reset_rect = reset_img.get_rect()
-    # Position it at the center of the screen
-    reset_rect.center = (SCREEN_WIDTH // 2, 310)  
-    SCREEN.blit(reset_img, reset_rect)
-
-    pygame.display.update()
-
 def generateObjects():
     switch = {
         0: SmallCactus(SMALL_CACTUS),
@@ -89,8 +73,6 @@ def generateObjects():
 def menu():
     global highscore
     global FONT_COLOR
-
-    highscore = 0
 
     #highscore file for memory
     with open("../highscore.txt", "r") as f:
@@ -117,7 +99,8 @@ def menu():
     textRect = text.get_rect() 
     textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
     SCREEN.blit(text, textRect)
-    SCREEN.blit(RUNNING[0], (SCREEN_WIDTH // 2 - 20, SCREEN_HEIGHT // 2 - 140))
+    # Image
+    SCREEN.blit(JUMPING, (SCREEN_WIDTH // 2 - 20, SCREEN_HEIGHT // 2 - 140))
     pygame.display.update()
 
     while True:
@@ -128,7 +111,25 @@ def menu():
                 exit()
             if event.type == pygame.KEYDOWN:
                 return
-                
+
+
+# MARK: Restart
+def restart_screen():
+    font = pygame.font.Font(FONT_FAMILY, 25)
+
+    text = font.render("G A M E  O V E R", False, FONT_COLOR)
+    textRect = text.get_rect() 
+    textRect.center = (SCREEN_WIDTH // 2, 210)
+    SCREEN.blit(text, textRect)
+
+    reset_img = RESET
+    reset_rect = reset_img.get_rect()
+    # Position it at the center of the screen
+    reset_rect.center = (SCREEN_WIDTH // 2, 310)  
+    SCREEN.blit(reset_img, reset_rect)
+
+    pygame.display.update()
+
 
 # MARK: Main
 def main():
@@ -213,9 +214,8 @@ def main():
                     if event.type == pygame.KEYDOWN:
                         start()
                         break
-        else:
-            pygame.display.update()
-        
+
+        pygame.display.update()
         clock.tick(FRAME_RATE)
 
 #start thread
