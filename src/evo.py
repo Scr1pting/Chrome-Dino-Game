@@ -56,8 +56,22 @@ def prediction(
 
 
 # MARK: Evolution
-def crossbreed(parent1: np.ndarray, parent2: np.ndarray) -> np.ndarray:
-    return (parent1 + parent2) / 2
+def crossbreed(parent1: Genome, parent2: Genome) -> Genome:
+    all_weights = []
+    all_biases = []
+
+    for i in range(len(parent1.all_weights)):
+        all_weights.append(
+            (parent1.all_weights[i] + parent2.all_weights[i]) / 2
+        )
+
+    for i in range(len(parent1.all_biases)):
+        all_weights.append(
+            (parent1.all_biases[i] + parent2.all_biases[i]) / 2
+        )
+
+    return Genome(all_weights, all_biases)
+    
 
 def mutate(genome: Genome) -> Genome:
     for i, weights in enumerate(genome.all_weights):
