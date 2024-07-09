@@ -10,14 +10,16 @@ import pygame # type: ignore
 
 from settings import *
 
-#object import Cactus, Bird, Cloud
+# Object import Cactus, Bird, Cloud
 from objects.obstacles import SmallCactus, LargeCactus, Bird
 from objects.dinosaur import Dinosaur
 from objects.cloud import Cloud
 
-#init
+# Init
 pygame.init()
 
+
+# MARK: Score
 def score():
     global points, distance, game_speed, highscore
     distance += game_speed
@@ -50,6 +52,8 @@ def score():
     SCREEN.blit(text1, (x_pos, y_pos))
     SCREEN.blit(text2, (x_pos_part2, y_pos))
 
+
+# MARK: Drawing
 def background():
     global x_pos_bg, y_pos_bg
     image_width = BG.get_width()
@@ -60,7 +64,7 @@ def background():
         x_pos_bg = 0
     x_pos_bg -= game_speed
 
-def generateObjects():
+def generate_objects():
     switch = {
         0: SmallCactus(SMALL_CACTUS),
         1: LargeCactus(LARGE_CACTUS),
@@ -176,7 +180,7 @@ def main():
         
         # Object generation
         if(distance > nextDistancePerGenerate):
-            generateObjects()
+            generate_objects()
             nextDistancePerGenerate += random.randint(450, 900)
         
         # Obstacles
@@ -214,6 +218,7 @@ def main():
         pygame.display.update()
         clock.tick(FRAME_RATE)
 
-#start thread
+
+# Start thread
 t1 = threading.Thread(target=main(), daemon=True)
 t1.start()
