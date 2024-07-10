@@ -9,7 +9,6 @@ class Obstacle:
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = SCREEN_WIDTH
-        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, game_speed, obstacles):
         self.rect.x -= game_speed
@@ -21,16 +20,16 @@ class Obstacle:
 
 
 class SmallCactus(Obstacle):
-    def __init__(self, images):
+    def __init__(self):
         self.obstacle_type = random.randint(0, 2)
-        self.image = images[self.obstacle_type]
+        self.image = SMALL_CACTUS[self.obstacle_type]
         super().__init__(self.image)
         self.rect.y = 328
 
 class LargeCactus(Obstacle):
-    def __init__(self, images):
+    def __init__(self):
         self.obstacle_type = random.randint(0, 2)
-        self.image = images[self.obstacle_type]
+        self.image = LARGE_CACTUS[self.obstacle_type]
         super().__init__(self.image)
         self.rect.y = 303
 
@@ -38,10 +37,15 @@ class LargeCactus(Obstacle):
 class Bird(Obstacle):
     BIRD_HEIGHTS = [250, 290, 320]
 
-    def __init__(self, images):
+    def __init__(self):
         self.obstacle_type = 0
-        self.images = images
-        self.image = images[0]
+
+        self.images = BIRD
+        self.image = BIRD[0]
+
+        self.masks = [pygame.mask.from_surface(image) for image in self.images]
+        self.mask = self.masks[0]
+
         super().__init__(self.image)
         self.rect.y = random.choice(self.BIRD_HEIGHTS)
         self.index = 0
@@ -54,10 +58,19 @@ class Bird(Obstacle):
         
         if self.index >= CYCLE_LENGTH // 2:
             self.image = self.images[0]
+            self.mask = self.masks[0]
         else:
             self.image = self.images[1]
-
-        self.mask = pygame.mask.from_surface(self.image)
+            self.mask = self.masks[1]
         
         SCREEN.blit(self.image, self.rect)
         self.index += 1
+
+
+def generate_obstacles(obstacles: list[Obstacle]):
+    switch = {
+        0: SmallCactus(),
+        1: LargeCactus(),
+        2: Bird()
+    }
+    obstacles.append(switch[random.randint(0, 2)])

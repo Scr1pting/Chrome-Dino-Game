@@ -19,3 +19,10 @@ class Cloud:
 
     def draw(self, SCREEN):
         SCREEN.blit(self.image, (self.x, self.y))
+
+
+def draw_clouds(clouds: list[Cloud], game_speed: int):
+    for index, cloud in enumerate(clouds):
+        prev_cloud = clouds[index - 1]
+        cloud.update(game_speed, prev_cloud)
+        cloud.draw(SCREEN)

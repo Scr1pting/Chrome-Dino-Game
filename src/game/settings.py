@@ -2,6 +2,7 @@ import pygame
 import os
 
 
+# MARK: General
 FRAME_RATE = 60
 
 SCREEN_HEIGHT = 600
@@ -14,17 +15,17 @@ SCREEN = pygame.display.set_mode(
 
 pygame.display.set_caption("Chrome Dino Runner")
 
-# Get the directory of the current script
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Adjust the paths to load images correctly
-Ico = pygame.image.load(os.path.join(
+APP_ICON = pygame.image.load(os.path.join(
     current_script_dir,
     "../../assets/other",
     "AppIcon.png"
 ))
-pygame.display.set_icon(Ico)
+pygame.display.set_icon(APP_ICON)
 
+
+# MARK: Dino
 RUNNING = [
     pygame.image.load(os.path.join(
         current_script_dir, 
@@ -59,6 +60,8 @@ DEAD = pygame.image.load(os.path.join(
     "../../assets/dino",
     "DinoDead.png"
 ))
+
+# MARK: Obstacles
 SMALL_CACTUS = [
     pygame.image.load(os.path.join(
         current_script_dir,
@@ -93,7 +96,6 @@ LARGE_CACTUS = [
         "LargeCactus3.png"
     )),
 ]
-
 BIRD = [
     pygame.image.load(os.path.join(
         current_script_dir,
@@ -107,24 +109,29 @@ BIRD = [
     )),
 ]
 
+
+# MARK: Background
 CLOUD = pygame.image.load(os.path.join(
     current_script_dir,
     "../../assets/other",
     "Cloud.png"
 ))
-
-BG = pygame.image.load(os.path.join(
+TRACK = pygame.image.load(os.path.join(
     current_script_dir,
     "../../assets/other",
     "Track.png"
 ))
 
+
+# MARK: Menu
 RESET = pygame.image.load(os.path.join(
     current_script_dir,
     "../../assets/other",
     "Reset.png"
 ))
 
+
+# MARK: Display
 BACKGROUND_COLOR = (247, 247, 247)
 
 FONT_COLOR = (83, 83, 83)

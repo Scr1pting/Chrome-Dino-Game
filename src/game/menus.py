@@ -2,6 +2,7 @@ import pygame
 
 from settings import *
 
+
 def initial_screen(highscore) -> float:
     SCREEN.fill(BACKGROUND_COLOR)
 
