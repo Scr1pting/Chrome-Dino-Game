@@ -5,29 +5,31 @@ import pygame
 
 from settings import *
 from menus import initial_screen, restart_screen
-from scoring import load_highscore, render_score
+from scoring import load_highscore, draw_score
 
 # Object import Cactus, Bird, Cloud
-from objects.obstacles import SmallCactus, LargeCactus, Bird
+from objects.obstacles import Obstacle, SmallCactus, LargeCactus, Bird
 from objects.dinosaur import Dinosaur
 from objects.cloud import Cloud
+
+from background import draw_ground, draw_clouds
 
 # Init
 pygame.init()
 
+class Game:
+    def __init__(self) -> None:
+        self.speed = 10
+        self.obstacles = []
 
-# MARK: Helper Functions
-def background():
-    global x_pos_bg, y_pos_bg
-    image_width = BG.get_width()
-    SCREEN.blit(BG, (x_pos_bg, y_pos_bg))
-    SCREEN.blit(BG, (image_width + x_pos_bg, y_pos_bg))
-    if x_pos_bg <= -image_width:
-        SCREEN.blit(BG, (image_width + x_pos_bg, y_pos_bg))
-        x_pos_bg = 0
-    x_pos_bg -= game_speed
+        self.distance = 0
+        self.points = 0
+        self.is_dead = False
 
-def generate_objects():
+        self.next_generate_distance = 0
+
+
+def generate_obstacles(obstacles: list[Obstacle]):
     switch = {
         0: SmallCactus(SMALL_CACTUS),
         1: LargeCactus(LARGE_CACTUS),
@@ -38,22 +40,8 @@ def generate_objects():
 
 # MARK: Main
 def main():
-    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, distance, is_dead, nextDistancePerGenerate
+    global obstacles
     
-    def start():
-        global game_speed, obstacles, distance, points, is_dead, nextDistancePerGenerate
-
-        game_speed = 10
-
-        obstacles = []
-
-        distance = 0
-        points = 0
-        is_dead = False
-
-        nextDistancePerGenerate = 0
-
-    run = True
     clock = pygame.time.Clock()
 
     player = Dinosaur()
@@ -61,60 +49,55 @@ def main():
 
     x_pos_bg = 0
     y_pos_bg = 380
-    is_dead = True
+    is_dead = False
     
     highscore = load_highscore()
-    
     initial_screen(highscore)
-    start()
 
-    while run:
+    game = Game()
+
+    while True:
         SCREEN.fill(BACKGROUND_COLOR)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
         
-        background()
+        x_pos_bg = draw_ground(x_pos_bg, y_pos_bg, game.speed)
+        draw_clouds(clouds, game.speed)
 
         # Get input
         userInput = pygame.key.get_pressed()
         player.update(userInput)
         
         # Object generation
-        if(distance > nextDistancePerGenerate):
-            generate_objects()
-            nextDistancePerGenerate += random.randint(450, 900)
+        if game.distance > game.next_generate_distance:
+            generate_obstacles(game.obstacles)
+            game.next_generate_distance += random.randint(450, 900)
         
         # Obstacles
-        for obstacle in obstacles.copy():
+        for obstacle in game.obstacles.copy():
             # Draw call
-            obstacle.update(game_speed, obstacles)
+            obstacle.update(game.speed, game.obstacles)
             obstacle.draw(SCREEN)
             
             # Collision detection
             if pygame.sprite.collide_mask(player, obstacle):
                 player.dead()
                 is_dead = True
-        
-        # Draw call for clouds
-        for index, cloud in enumerate(clouds):
-            prev_cloud = clouds[index - 1]
-            cloud.update(game_speed, prev_cloud)
-            cloud.draw(SCREEN)
 
         # Draw call for player
         player.draw(SCREEN)
-        
-        distance += game_speed
+    
+        game.distance += game.speed
 
-        if distance % 50 == 0:
-            points += 1
-        if distance % 700 == 0:
-            game_speed += 1
+        if game.distance % 50 == 0:
+            game.points += 1
+        if game.distance % 700 == 0:
+            game.speed += 1
 
         # Update score
-        render_score(highscore, points)
+        draw_score(highscore, game.points)
         
         if is_dead: 
             restart_screen()
@@ -122,7 +105,8 @@ def main():
             while is_dead:
                 for event in pygame.event.get():
                     if event.type == pygame.KEYDOWN:
-                        start()
+                        game = Game()
+                        is_dead = False
                         break
 
         pygame.display.update()
