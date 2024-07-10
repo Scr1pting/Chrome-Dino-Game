@@ -17,6 +17,7 @@ def load_highscore() -> int:
         except:
             return 0
 
+
 def render_score(highscore, points):
     font = pygame.font.Font(FONT_FAMILY, 20)
     

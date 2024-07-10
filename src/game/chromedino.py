@@ -16,11 +16,7 @@ from objects.cloud import Cloud
 pygame.init()
 
 
-# MARK: Score
-
-
-
-# MARK: Drawing
+# MARK: Helper Functions
 def background():
     global x_pos_bg, y_pos_bg
     image_width = BG.get_width()
@@ -38,7 +34,6 @@ def generate_objects():
         2: Bird(BIRD)
     }
     obstacles.append(switch[random.randint(0, 2)])
-
 
 
 # MARK: Main
