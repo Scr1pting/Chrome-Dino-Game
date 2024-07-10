@@ -11,13 +11,16 @@ MUTATION_RATE = 0.01
 
 # MARK: Genome
 class Genome:
-    def __init__(
+   def __init__(
             self,
             all_weights: list, # 3D array
             all_biases: list # 2D array
         ):
         self.all_weights = all_weights
         self.all_biases = all_biases
+        # Transposition
+        for i, biases in enumerate(self.all_weights):
+            self.all_weights[i]= self.all_weights[i].transpose()
 
 def create_genome() -> Genome:
     # Three arrays of weights
