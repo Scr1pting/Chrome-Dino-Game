@@ -36,7 +36,6 @@ def create_genome() -> Genome:
     # 1x16, 1x16, 1x3 
     # Biases are initialized with a normal distribution
     all_biases = [
-        np.random.normal(size=(LAYER_SIZE)),
         *np.random.normal(size=(HIDDEN_LAYERS, LAYER_SIZE)),
         np.random.normal(size=(OUTPUT_SIZE))
     ]
