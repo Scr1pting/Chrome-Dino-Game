@@ -31,35 +31,35 @@ RUNNING = [
         current_script_dir, 
         "../../assets/dino", 
         "DinoRun1.png"
-    )),
+    )).convert_alpha(),
     pygame.image.load(os.path.join(
         current_script_dir,
         "../../assets/dino",
         "DinoRun2.png"
-    )),
+    )).convert_alpha(),
 ]
 JUMPING = pygame.image.load(os.path.join(
     current_script_dir,
     "../../assets/dino", 
     "DinoJump.png"
-))
+)).convert_alpha()
 DUCKING = [
     pygame.image.load(os.path.join(
         current_script_dir,
         "../../assets/dino",
         "DinoDuck1.png"
-    )),
+    )).convert_alpha(),
     pygame.image.load(os.path.join(
         current_script_dir,
         "../../assets/dino", 
         "DinoDuck2.png"
-    )),
+    )).convert_alpha(),
 ]
 DEAD = pygame.image.load(os.path.join(
     current_script_dir,
     "../../assets/dino",
     "DinoDead.png"
-))
+)).convert_alpha()
 
 # MARK: Obstacles
 SMALL_CACTUS = [
@@ -67,46 +67,46 @@ SMALL_CACTUS = [
         current_script_dir,
         "../../assets/cactus",
         "SmallCactus1.png"
-    )),
+    )).convert_alpha(),
     pygame.image.load(os.path.join(
         current_script_dir,
         "../../assets/cactus",
         "SmallCactus2.png"
-    )),
+    )).convert_alpha(),
     pygame.image.load(os.path.join(
         current_script_dir,
         "../../assets/cactus",
         "SmallCactus3.png"
-    )),
+    )).convert_alpha(),
 ]
 LARGE_CACTUS = [
     pygame.image.load(os.path.join(
         current_script_dir, 
         "../../assets/cactus",
         "LargeCactus1.png"
-    )),
+    )).convert_alpha(),
     pygame.image.load(os.path.join(
         current_script_dir,
         "../../assets/cactus", 
         "LargeCactus2.png"
-    )),
+    )).convert_alpha(),
     pygame.image.load(os.path.join(
         current_script_dir,
         "../../assets/cactus", 
         "LargeCactus3.png"
-    )),
+    )).convert_alpha()
 ]
 BIRD = [
     pygame.image.load(os.path.join(
         current_script_dir,
         "../../assets/bird",
         "Bird1.png"
-    )),
+    )).convert_alpha(),
     pygame.image.load(os.path.join(
         current_script_dir,
         "../../assets/bird",
         "Bird2.png"
-    )),
+    )).convert_alpha()
 ]
 
 
@@ -115,12 +115,12 @@ CLOUD = pygame.image.load(os.path.join(
     current_script_dir,
     "../../assets/other",
     "Cloud.png"
-))
+)).convert_alpha()
 TRACK = pygame.image.load(os.path.join(
     current_script_dir,
     "../../assets/other",
     "Track.png"
-))
+)).convert_alpha()
 
 
 # MARK: Menu
@@ -128,7 +128,7 @@ RESET = pygame.image.load(os.path.join(
     current_script_dir,
     "../../assets/other",
     "Reset.png"
-))
+)).convert_alpha()
 
 
 # MARK: Display

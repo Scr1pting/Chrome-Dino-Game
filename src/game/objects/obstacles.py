@@ -7,6 +7,7 @@ import random
 class Obstacle:
     def __init__(self, image):
         self.image = image
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = SCREEN_WIDTH
 

@@ -81,6 +81,8 @@ def main():
             obstacle.draw(SCREEN)
             
             # Collision detection
+            # Even works without mask property but slower since it 
+            # creates one on the fly from the image attribute.
             if pygame.sprite.collide_mask(player, obstacle):
                 player.dead()
                 is_dead = True
