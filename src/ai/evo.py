@@ -51,7 +51,9 @@ def layer_prediction(
         weights: np.ndarray,
         biases: np.ndarray
     ) -> np.ndarray:
-    return activation(weights @ input_values + biases)
+    # 1D arrays like input_values are treated as column vectors by np.
+    # Therefore, we need to transpose the weights.
+    return activation(weights.T @ input_values + biases)
 
 def predict(genome: Genome, input_values: np.ndarray) -> np.ndarray:
     for i in range(len(genome.all_weights)):
@@ -103,4 +105,7 @@ def mutate(genome: Genome) -> Genome:
 
 if __name__ == "__main__":
     genome1 = create_genome()
-    print(genome1.all_weights)
+    print(predict(
+        genome1,
+        np.array([0.5, 0.5])
+    ))
