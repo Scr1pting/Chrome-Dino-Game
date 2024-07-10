@@ -1,15 +1,21 @@
 import pygame
+import os
 
 from settings import *
 
-def load_highscore():
+
+def load_highscore() -> int:
+    current_script_dir = os.path.dirname(__file__)
+
     # Highscore file for memory
-    with open("../highscore.txt", "r") as f:
-        raw_highscore = f.read().strip()
+    with open(
+        os.path.join(current_script_dir, "../../highscore.txt"),
+        "r"
+    ) as f:
         try:
-            highscore = int(raw_highscore)
+            return int(f.read().strip())
         except:
-            highscore = 0
+            return 0
 
 def render_score(highscore, points):
     font = pygame.font.Font(FONT_FAMILY, 20)

@@ -14,43 +14,123 @@ SCREEN = pygame.display.set_mode(
 
 pygame.display.set_caption("Chrome Dino Runner")
 
-Ico = pygame.image.load("../assets/other/AppIcon.png")
+# Get the directory of the current script
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Adjust the paths to load images correctly
+Ico = pygame.image.load(os.path.join(
+    current_script_dir,
+    "../../assets/other",
+    "AppIcon.png"
+))
 pygame.display.set_icon(Ico)
 
 RUNNING = [
-    pygame.image.load(os.path.join("../assets/dino", "DinoRun1.png")),
-    pygame.image.load(os.path.join("../assets/dino", "DinoRun2.png")),
+    pygame.image.load(os.path.join(
+        current_script_dir, 
+        "../../assets/dino", 
+        "DinoRun1.png"
+    )),
+    pygame.image.load(os.path.join(
+        current_script_dir,
+        "../../assets/dino",
+        "DinoRun2.png"
+    )),
 ]
-JUMPING = pygame.image.load(os.path.join("../assets/dino", "DinoJump.png"))
+JUMPING = pygame.image.load(os.path.join(
+    current_script_dir,
+    "../../assets/dino", 
+    "DinoJump.png"
+))
 DUCKING = [
-    pygame.image.load(os.path.join("../assets/dino", "DinoDuck1.png")),
-    pygame.image.load(os.path.join("../assets/dino", "DinoDuck2.png")),
+    pygame.image.load(os.path.join(
+        current_script_dir,
+        "../../assets/dino",
+        "DinoDuck1.png"
+    )),
+    pygame.image.load(os.path.join(
+        current_script_dir,
+        "../../assets/dino", 
+        "DinoDuck2.png"
+    )),
 ]
-DEAD = pygame.image.load(os.path.join("../assets/dino", "DinoDead.png"))
+DEAD = pygame.image.load(os.path.join(
+    current_script_dir,
+    "../../assets/dino",
+    "DinoDead.png"
+))
 SMALL_CACTUS = [
-    pygame.image.load(os.path.join("../assets/cactus", "SmallCactus1.png")),
-    pygame.image.load(os.path.join("../assets/cactus", "SmallCactus2.png")),
-    pygame.image.load(os.path.join("../assets/cactus", "SmallCactus3.png")),
+    pygame.image.load(os.path.join(
+        current_script_dir,
+        "../../assets/cactus",
+        "SmallCactus1.png"
+    )),
+    pygame.image.load(os.path.join(
+        current_script_dir,
+        "../../assets/cactus",
+        "SmallCactus2.png"
+    )),
+    pygame.image.load(os.path.join(
+        current_script_dir,
+        "../../assets/cactus",
+        "SmallCactus3.png"
+    )),
 ]
 LARGE_CACTUS = [
-    pygame.image.load(os.path.join("../assets/cactus", "LargeCactus1.png")),
-    pygame.image.load(os.path.join("../assets/cactus", "LargeCactus2.png")),
-    pygame.image.load(os.path.join("../assets/cactus", "LargeCactus3.png")),
+    pygame.image.load(os.path.join(
+        current_script_dir, 
+        "../../assets/cactus",
+        "LargeCactus1.png"
+    )),
+    pygame.image.load(os.path.join(
+        current_script_dir,
+        "../../assets/cactus", 
+        "LargeCactus2.png"
+    )),
+    pygame.image.load(os.path.join(
+        current_script_dir,
+        "../../assets/cactus", 
+        "LargeCactus3.png"
+    )),
 ]
 
 BIRD = [
-    pygame.image.load(os.path.join("../assets/bird", "Bird1.png")),
-    pygame.image.load(os.path.join("../assets/bird", "Bird2.png")),
+    pygame.image.load(os.path.join(
+        current_script_dir,
+        "../../assets/bird",
+        "Bird1.png"
+    )),
+    pygame.image.load(os.path.join(
+        current_script_dir,
+        "../../assets/bird",
+        "Bird2.png"
+    )),
 ]
 
-CLOUD = pygame.image.load(os.path.join("../assets/other", "Cloud.png"))
+CLOUD = pygame.image.load(os.path.join(
+    current_script_dir,
+    "../../assets/other",
+    "Cloud.png"
+))
 
-BG = pygame.image.load(os.path.join("../assets/other", "Track.png"))
+BG = pygame.image.load(os.path.join(
+    current_script_dir,
+    "../../assets/other",
+    "Track.png"
+))
 
-RESET = pygame.image.load(os.path.join("../assets/other", "Reset.png"))
+RESET = pygame.image.load(os.path.join(
+    current_script_dir,
+    "../../assets/other",
+    "Reset.png"
+))
 
 BACKGROUND_COLOR = (247, 247, 247)
 
 FONT_COLOR = (83, 83, 83)
 FONT_COLOR_LIGHT = (117, 117, 117)
-FONT_FAMILY = "../assets/font/PressStart2p.ttf"
+FONT_FAMILY = os.path.join(
+    current_script_dir,
+    "../../assets/font",
+    "PressStart2P.ttf"
+)
