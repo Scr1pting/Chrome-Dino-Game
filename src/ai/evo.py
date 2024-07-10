@@ -1,12 +1,17 @@
 import numpy as np
+from tqdm import tqdm
+
+from chromedino import start_game
 
 
-INPUT_SIZE = 2
+INPUT_SIZE = 4
 OUTPUT_SIZE = 3
 HIDDEN_LAYERS = 2
 LAYER_SIZE = 16
 
 MUTATION_RATE = 0.01
+POPULATION_SIZE = 10
+EPOCHS = 100
 
 
 # MARK: Genome
@@ -56,6 +61,9 @@ def layer_prediction(
     return activation(weights.T @ input_values + biases)
 
 def predict(genome: Genome, input_values: np.ndarray) -> np.ndarray:
+    """Format input values:
+    [speed, player height, distance next object, object height]
+    """
     for i in range(len(genome.all_weights)):
         input_values = layer_prediction(
             input_values,
@@ -64,12 +72,35 @@ def predict(genome: Genome, input_values: np.ndarray) -> np.ndarray:
         )
     return input_values
 
+def next_step(genome: Genome, input_values: np.ndarray) -> int:
+    """
+    0: Duck
+    1: Run
+    2: Jump
+    """
+    return int(np.argmax(predict(genome, input_values)))
+
 
 # MARK: Evolution
-# def fitness(genome: Genome) -> float:
-    
+def get_fitness(genome: Genome) -> int:
+    return start_game(genome)
 
-def crossbreed(parent1: Genome, parent2: Genome) -> Genome:
+def select(population: list[Genome], fitnesses: list[int]) -> list[Genome]:
+    probabilities = [fitness / sum(fitnesses) for fitness in fitnesses]
+
+    parents = []
+
+    for _ in range(len(population) - 1):
+        # Roulette wheel selection
+        new_index = np.random.choice(
+                range(len(population)),
+                p=probabilities
+            )
+        parents.append(population[new_index])
+    
+    return parents
+
+def crossover(parent1: Genome, parent2: Genome) -> Genome:
     all_weights = []
     all_biases = []
 
@@ -99,13 +130,34 @@ def mutate(genome: Genome) -> Genome:
     
     return genome
     
-# def breed():
+def breed():
+    population = [create_genome() for _ in range(10)]
 
+    for i in range(EPOCHS):
+        fitnesses = []
+
+        print(f"Iteration {i}: ", end="")
+        for genome in tqdm(population):
+            fitness = get_fitness(genome)
+            fitnesses.append(fitness)
+        
+        parents = select(population, fitnesses)
+        new_population = []
+
+        for i in range(POPULATION_SIZE):
+            if i == 0:
+                # Always keep the best genome
+                # Elitism
+                new_population[i] = population[np.argmax(fitnesses)]
+            else:
+                genome1, genome2 = np.random.choice(np.array(parents), 2)
+                new_population[i] = crossover(genome1, genome2)
+                new_population[i] = mutate(new_population[i])
+
+        print("Max fitness: " + max(fitnesses))
+
+        population = new_population      
 
 
 if __name__ == "__main__":
-    genome1 = create_genome()
-    print(predict(
-        genome1,
-        np.array([0.5, 0.5])
-    ))
+    breed()

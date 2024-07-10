@@ -30,7 +30,7 @@ class Game:
 
 
 # MARK: Main
-def main():
+def start_game():
     clock = pygame.time.Clock()
 
     player = Dinosaur()
@@ -107,5 +107,5 @@ def main():
 
 
 # Start thread
-t1 = threading.Thread(target=main(), daemon=True)
+t1 = threading.Thread(target=start_game(), daemon=True)
 t1.start()

@@ -1,21 +1,20 @@
 # Lib
 import random
-import threading
 import pygame
+import numpy as np
 
-from settings import *
-from menus import initial_screen, restart_screen
-from scoring import load_highscore, draw_score
+from game.settings import *
 
 # Object import Cactus, Bird, Cloud
-from objects.obstacles import Obstacle, SmallCactus, LargeCactus, Bird
-from objects.dinosaur import Dinosaur
-from objects.cloud import Cloud
+from game.objects.obstacles import generate_obstacles
+from game.objects.dinosaur import Dinosaur
 
-from background import draw_ground, draw_clouds
+# Evolutionary algorithm
+from evo import Genome, next_step
 
 # Init
 pygame.init()
+
 
 class Game:
     def __init__(self) -> None:
@@ -29,90 +28,52 @@ class Game:
         self.next_generate_distance = 0
 
 
-def generate_obstacles(obstacles: list[Obstacle]):
-    switch = {
-        0: SmallCactus(SMALL_CACTUS),
-        1: LargeCactus(LARGE_CACTUS),
-        2: Bird(BIRD)
-    }
-    obstacles.append(switch[random.randint(0, 2)])
-
-
 # MARK: Main
-def main():
-    global obstacles
-    
-    clock = pygame.time.Clock()
-
+def start_game(genome: Genome) -> int:
     player = Dinosaur()
-    clouds = [Cloud(x=600*i) for i in range(2)]
-
-    x_pos_bg = 0
-    y_pos_bg = 380
-    is_dead = False
-    
-    highscore = load_highscore()
-    initial_screen(highscore)
-
     game = Game()
 
     while True:
         SCREEN.fill(BACKGROUND_COLOR)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-        
-        x_pos_bg = draw_ground(x_pos_bg, y_pos_bg, game.speed)
-        draw_clouds(clouds, game.speed)
-
-        # Get input
-        userInput = pygame.key.get_pressed()
-        player.update(userInput)
-        
-        # Object generation
-        if game.distance > game.next_generate_distance:
-            generate_obstacles(game.obstacles)
-            game.next_generate_distance += random.randint(450, 900)
-        
-        # Obstacles
-        for obstacle in game.obstacles.copy():
-            # Draw call
-            obstacle.update(game.speed, game.obstacles)
-            obstacle.draw(SCREEN)
-            
-            # Collision detection
-            if pygame.sprite.collide_mask(player, obstacle):
-                player.dead()
-                is_dead = True
-
-        # Draw call for player
-        player.draw(SCREEN)
-    
+        # Progress
         game.distance += game.speed
 
         if game.distance % 50 == 0:
             game.points += 1
         if game.distance % 700 == 0:
             game.speed += 1
-
-        # Update score
-        draw_score(highscore, game.points)
         
-        if is_dead: 
-            restart_screen()
+        # Obstacle generation
+        if game.distance > game.next_generate_distance:
+            generate_obstacles(game.obstacles)
+            game.next_generate_distance += random.randint(450, 900)
+        
+        # Prediction
+        move = next_step(
+            genome,
+            np.array([
+                game.speed,
+                player.rect.y,
+                game.obstacles[0].rect.x,
+                game.obstacles[0].rect.y
+            ])
+        )
 
-            while is_dead:
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        game = Game()
-                        is_dead = False
-                        break
+        if move == 0:
+            player.duck()
+        elif move == 1:
+            player.run()
+        elif move == 2:
+            player.jump()
 
-        pygame.display.update()
-        clock.tick(FRAME_RATE)
+        # Update, drawing and collision
+        for obstacle in game.obstacles.copy():
+            # Draw call
+            obstacle.update(game.speed, game.obstacles)
 
-
-# Start thread
-t1 = threading.Thread(target=main(), daemon=True)
-t1.start()
+            # Collision detection
+            # Even works without mask property but slower since it 
+            # creates one on the fly from the image attribute.
+            if pygame.sprite.collide_mask(player, obstacle):
+                return game.points
