@@ -1,17 +1,18 @@
 import numpy as np
+import random
 from tqdm import tqdm
 
 import ai.chromedino as chromedino
 
 
 INPUT_SIZE = 4
-OUTPUT_SIZE = 3
+OUTPUT_SIZE = 2
 HIDDEN_LAYERS = 2
-LAYER_SIZE = 16
+LAYER_SIZE = 8
 
 MUTATION_RATE = 0.1
-POPULATION_SIZE = 1000
-EPOCHS = 1000
+GENOMES_SIZE = 1_000
+EPOCHS = 1_000
 
 
 # MARK: Genome
@@ -21,8 +22,13 @@ class Genome:
             all_weights: list, # 3D array
             all_biases: list # 2D array
         ):
+        self.id = id(self)
         self.all_weights = all_weights
         self.all_biases = all_biases
+        self.score = 0
+    
+    def __lt__(self, other):
+        return self.score > other.score
 
 def create_genome() -> Genome:
     # Three arrays of weights
@@ -48,21 +54,24 @@ def create_genome() -> Genome:
 
 
 # MARK: Evolution
-def get_fitness(genome: Genome) -> int:
-    return chromedino.start_game(genome)
+def get_fitness(genomes: list) -> list:
+    return chromedino.start_game(genomes)
 
-def select(population: list[Genome], fitnesses: list[int]) -> list[Genome]:
+def select(fitnesses: list[Genome]) -> list[Genome]:
+    return sorted(fitnesses[-5:], reverse=True)
+
+
     probabilities = [fitness / sum(fitnesses) for fitness in fitnesses]
 
     parents = []
 
-    for _ in range(len(population)):
+    for _ in range(len(genomes)):
         # Roulette wheel selection
         new_index = np.random.choice(
-                range(len(population)),
+                range(len(genomes)),
                 p=probabilities
             )
-        parents.append(population[new_index])
+        parents.append(genomes[new_index])
     
     return parents
 
@@ -97,32 +106,26 @@ def mutate(genome: Genome) -> Genome:
     return genome
     
 def breed():
-    population = [create_genome() for _ in range(POPULATION_SIZE)]
+    genomes = [create_genome() for _ in range(GENOMES_SIZE)]
 
     for i in range(EPOCHS):
-        fitnesses = []
+        fitnesses = get_fitness(genomes)
 
         print(f"Iteration {i}: ", end="")
-        for genome in tqdm(population):
-            fitness = get_fitness(genome)
-            fitnesses.append(fitness)
         
-        parents = select(population, fitnesses)
-        new_population = []
+        parents = select(fitnesses)
+        new_genomes = []
 
-        for i in range(POPULATION_SIZE):
-            if i == 0:
-                # Always keep the best genome
-                # Elitism
-                new_population += [population[np.argmax(fitnesses)]]
-            else:
-                genome1, genome2 = np.random.choice(np.array(parents), 2)
-                new_population += [crossover(genome1, genome2)]
-                new_population[i] = mutate(new_population[i])
+        new_genomes += parents
 
-        print(f"Max fitness: {max(fitnesses)}")
+        for _ in range(GENOMES_SIZE - 5):
+            new_genome = mutate(random.choice(parents))
+            new_genome.score = 0
+            new_genomes += [new_genome]
 
-        population = new_population      
+        # print(f"Max fitness: {max(fitnesses)}")
+
+        genomes = new_genomes      
 
 
 if __name__ == "__main__":

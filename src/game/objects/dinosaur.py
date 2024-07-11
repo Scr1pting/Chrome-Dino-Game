@@ -21,9 +21,10 @@ class Dinosaur:
         self.jump_mask = pygame.mask.from_surface(JUMPING)
         self.duck_masks = [pygame.mask.from_surface(img) for img in DUCKING]
 
-        self.dino_duck = False
-        self.dino_run = True
-        self.dino_jump = False
+        self.is_ducked = False
+        self.is_running = True
+        self.is_jumping = False
+        self.is_dead = False
 
         self.step_index = 0
         self.jump_vel = self.JUMP_VEL
@@ -37,11 +38,11 @@ class Dinosaur:
 
 
     def update(self):
-        if self.dino_duck:
+        if self.is_ducked:
             self.duck()
-        if self.dino_run:
+        if self.is_running:
             self.run()
-        if self.dino_jump:
+        if self.is_jumping:
             self.jump()
 
         if self.step_index >= self.CYCLE_LENGTH:
@@ -49,18 +50,18 @@ class Dinosaur:
 
         user_input = pygame.key.get_pressed()
 
-        if (user_input[pygame.K_UP] or user_input[pygame.K_SPACE]) and not self.dino_jump:
-            self.dino_duck = False
-            self.dino_run = False
-            self.dino_jump = True
-        elif user_input[pygame.K_DOWN] and not self.dino_jump:
-            self.dino_duck = True
-            self.dino_run = False
-            self.dino_jump = False
-        elif not (self.dino_jump or user_input[pygame.K_DOWN]):
-            self.dino_duck = False
-            self.dino_run = True
-            self.dino_jump = False
+        if (user_input[pygame.K_UP] or user_input[pygame.K_SPACE]) and not self.is_jumping:
+            self.is_ducked = False
+            self.is_running = False
+            self.is_jumping = True
+        elif user_input[pygame.K_DOWN] and not self.is_jumping:
+            self.is_ducked = True
+            self.is_running = False
+            self.is_jumping = False
+        elif not (self.is_jumping or user_input[pygame.K_DOWN]):
+            self.is_ducked = False
+            self.is_running = True
+            self.is_jumping = False
 
     def duck(self):
         current_index = self.step_index // (self.CYCLE_LENGTH // 2)
@@ -89,14 +90,15 @@ class Dinosaur:
     def jump(self):
         self.image = self.jump_img
         self.mask = self.jump_mask
-        if self.dino_jump:
+        if self.is_jumping:
             self.rect.y -= int(self.jump_vel * 2.5)
             self.jump_vel -= 0.5
         if self.jump_vel < -self.JUMP_VEL:
-            self.dino_jump = False
+            self.is_jumping = False
             self.jump_vel = self.JUMP_VEL
 
     def dead(self):
+        self.is_dead = True
         self.image = self.dead_img
         self.rect.x = self.X_POS
         # When ducking

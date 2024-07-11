@@ -29,9 +29,13 @@ class Game:
 
 
 # MARK: Main
-def start_game(genome) -> int:
-    player = Dinosaur()
+def start_game(genomes) -> list[tuple]:
+    clock = pygame.time.Clock()
+        
+    players = [Dinosaur() for _ in genomes]
     game = Game()
+
+    fitnesses: list[tuple] = []
 
     while True:
         SCREEN.fill(BACKGROUND_COLOR)
@@ -39,9 +43,9 @@ def start_game(genome) -> int:
         # Progress
         game.distance += game.speed
 
-        if game.distance % 50 == 0:
+        if game.distance - game.points * 50 > 50:
             game.points += 1
-        if game.distance % 700 == 0:
+        if game.distance - game.speed * 700 > 700:
             game.speed += 1
         
         # Obstacle generation
@@ -49,37 +53,52 @@ def start_game(genome) -> int:
             generate_obstacles(game.obstacles)
             game.next_generate_distance += random.randint(450, 900)
         
+        genomes_copy = genomes.copy()
+
         # Prediction
-        move = next_step(
-            genome,
-            np.array([
-                game.speed,
-                player.rect.y,
-                game.obstacles[0].rect.x,
-                game.obstacles[0].rect.y
-            ])
-        )
-
-        if move == 2:
-            player.dino_duck = False
-            player.dino_run = True
-        elif not player.dino_jump:
-            if move == 0:
-                player.dino_duck = True
-                player.dino_run = False
+        for i, player in enumerate(players.copy()):
+            if game.obstacles:
+                move = next_step(
+                    genomes_copy[i],
+                    np.array([
+                        game.speed,
+                        player.rect.y,
+                        game.obstacles[0].rect.x,
+                        game.obstacles[0].rect.y
+                ]))
             else:
-                player.dino_duck = False
-                player.dino_run = True
+                move = 1
 
-        player.update()
+            if move == 1:
+                player.is_ducked = False
+                player.is_running = False
+                player.is_jumping = True
+            elif not player.is_jumping:
+                player.is_ducked = False
+                player.is_running = True
 
-        # Update, drawing and collision
-        for obstacle in game.obstacles.copy():
-            # Draw call
+            player.update()
+
+            # Update, drawing and collision
+            for obstacle in game.obstacles.copy():
+                # Collision detection
+                # Even works without mask property but slower since it 
+                # creates one on the fly from the image attribute.
+                if pygame.sprite.collide_mask(player, obstacle):
+                    genomes_copy[i].score = game.distance
+                    fitnesses.append(genomes_copy[i])
+                    players.remove(player)
+                    genomes.remove(genomes_copy[i])
+                    break
+    
+        for obstacle in game.obstacles:
             obstacle.update(game.speed, game.obstacles)
+            obstacle.draw(SCREEN)
 
-            # Collision detection
-            # Even works without mask property but slower since it 
-            # creates one on the fly from the image attribute.
-            if pygame.sprite.collide_mask(player, obstacle):
-                return game.points
+        if players == []:
+            return fitnesses
+        
+        players[0].draw(SCREEN)
+        
+        pygame.display.update()
+        clock.tick(FRAME_RATE)
