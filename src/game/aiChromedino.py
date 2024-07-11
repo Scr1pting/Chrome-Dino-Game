@@ -27,8 +27,8 @@ def main():
     run = True
     clock = pygame.time.Clock()
 
-    agents = [AiDinosaur() for _ in range(10)]
-    clouds = [Cloud() for _ in range(3)]
+    agents = [AiDinosaur() for _ in range(20)]
+    clouds = [Cloud() for _ in range(20)]
     
     game_speed = 10
     x_pos_bg = 0
@@ -40,12 +40,12 @@ def main():
     obstacles = []
     death_count = 0
     
-    parentCount = 5
+    parentCount = 3
     parents = []
 
    
     
-    nextDistancePerGenerate =800
+    nextDistancePerGenerate =1000
     nextDistancePerVelocity = 1000
     nextDistancePerPoint =50
     
@@ -59,7 +59,7 @@ def main():
             nextDistancePerPoint +=50
         if distance > nextDistancePerVelocity:
             game_speed += 1
-            nextDistancePerVelocity +=1000 
+            nextDistancePerVelocity +=10000 
             print("faster")
 
         
@@ -86,10 +86,11 @@ def main():
     generateObjects(SCREEN_WIDTH)
     generateObjects(SCREEN_WIDTH+300)
     while run:
-              
+        if len(obstacles)==0:
+             generateObjects(SCREEN_WIDTH)
         if(distance>nextDistancePerGenerate):
             generateObjects(SCREEN_WIDTH)
-            nextDistancePerGenerate+=random.randint(450, 900)
+            nextDistancePerGenerate+=random.randint(600, 900)
         is_dead = False
         
         for event in pygame.event.get():
@@ -121,8 +122,8 @@ def main():
             
                     
         #draw call for agents
-        #for agent in agents:
-            #agent.draw(SCREEN)
+        for agent in agents:
+            agent.draw(SCREEN)
         #update score
         nextDistancePerVelocity,nextDistancePerPoint =score(nextDistancePerVelocity,nextDistancePerPoint)        
         #render frame
@@ -139,23 +140,32 @@ def main():
         if len(agents)==0:
             distance = 1
             game_speed = 10
-            nextDistancePerGenerate =400
+            nextDistancePerGenerate =600
             nextDistancePerVelocity = 1000
             nextDistancePerPoint = 50
             for i,agent in enumerate (parents):
-                
+                print("0")
+                #print(agent.genome.all_weights[0][0])
                 agents.append(agent)
-                for j in range(3):
+                #print(agents[len(agents)-1].genome.all_weights[0][0])
+                print("break")
+                for j in range(50):
+                    #print("1")
                     agents.append(AiDinosaur())
-                    g = mutate(agent.genome)
-                    #print(g.all_weights)
-                    #print(g.all_biases)
-                    agents[len(agents)-1].genomeUpdate(g)
+                    #print(agents[len(agents)-1].genome.all_weights[0][0])
+                   
+                    print("break")
+            for i,agent in enumerate (agents):
+                print(agent.genome.all_weights[0][0])
             for i,agent in enumerate (parents):
                 parents.pop()
-            print (agents)       
+            #print (agents)
+            
+            #for i in range(10):
+                #for obstacle in obstacles:
+                    #obstacle.update(game_speed, obstacles)
               
-        agents[0].draw(SCREEN)  
+        #agents[0].draw(SCREEN)  
         pygame.display.update()
 
 # MARK: Menu

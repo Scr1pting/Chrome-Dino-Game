@@ -6,7 +6,7 @@ OUTPUT_SIZE = 2
 HIDDEN_LAYERS = 2
 LAYER_SIZE = 4
 
-MUTATION_RATE = 0.2
+MUTATION_RATE = 0.1
 
 
 # MARK: Genome
@@ -94,12 +94,12 @@ def mutate(genome: Genome) -> Genome:
         for row in range(len(weights)):
             for col in range(len(weights[row])):
                 if np.random.rand() < MUTATION_RATE:
-                    genome.all_weights[i][row, col] += 0.05*np.random.normal()
+                    genome.all_weights[i][row, col] += 0.1*np.random.normal()
     
     for i, biases in enumerate(genome.all_biases):
         for j in range(len(biases)):
             if np.random.rand() < MUTATION_RATE:
-                genome.all_biases[i][j] += 0.05*np.random.normal()
+                genome.all_biases[i][j] += 0.1*np.random.normal()
     
     return genome
     
