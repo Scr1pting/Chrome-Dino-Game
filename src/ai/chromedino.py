@@ -9,8 +9,8 @@ from game.settings import *
 from game.objects.obstacles import generate_obstacles
 from game.objects.dinosaur import Dinosaur
 
-# Evolutionary algorithm
-from evo import Genome, next_step
+# AI
+from ai.prediction import next_step
 
 # Init
 pygame.init()
@@ -29,7 +29,7 @@ class Game:
 
 
 # MARK: Main
-def start_game(genome: Genome) -> int:
+def start_game(genome) -> int:
     player = Dinosaur()
     game = Game()
 
@@ -60,12 +60,18 @@ def start_game(genome: Genome) -> int:
             ])
         )
 
-        if move == 0:
-            player.duck()
-        elif move == 1:
-            player.run()
-        elif move == 2:
-            player.jump()
+        if move == 2:
+            player.dino_duck = False
+            player.dino_run = True
+        elif not player.dino_jump:
+            if move == 0:
+                player.dino_duck = True
+                player.dino_run = False
+            else:
+                player.dino_duck = False
+                player.dino_run = True
+
+        player.update()
 
         # Update, drawing and collision
         for obstacle in game.obstacles.copy():

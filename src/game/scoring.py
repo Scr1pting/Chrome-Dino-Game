@@ -1,7 +1,7 @@
 import pygame
 import os
 
-from settings import *
+from game.settings import *
 
 
 def load_highscore() -> int:

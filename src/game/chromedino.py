@@ -3,15 +3,15 @@ import random
 import threading
 import pygame
 
-from settings import *
-from menus import initial_screen, restart_screen
-from scoring import load_highscore, draw_score
+from game.settings import *
+from game.menus import initial_screen, restart_screen
+from game.scoring import load_highscore, draw_score
 
 # Object import Cactus, Bird, Cloud
-from objects.obstacles import generate_obstacles
-from objects.dinosaur import Dinosaur
-from objects.cloud import Cloud, draw_clouds
-from objects.track import Track
+from game.objects.obstacles import generate_obstacles
+from game.objects.dinosaur import Dinosaur
+from game.objects.cloud import Cloud, draw_clouds
+from game.objects.track import Track
 
 # Init
 pygame.init()
@@ -85,11 +85,15 @@ def start_game():
             # creates one on the fly from the image attribute.
             if pygame.sprite.collide_mask(player, obstacle):
                 player.dead()
+                player.draw(SCREEN)
+                pygame.display.update()
                 is_dead = True
-        
-        # Player
-        player.update()
-        player.draw(SCREEN)
+                break
+        else:
+            # Player
+            user_input = pygame.key.get_pressed()
+            player.update()
+            player.draw(SCREEN)
 
         # Death
         if is_dead: 
@@ -106,6 +110,7 @@ def start_game():
         clock.tick(FRAME_RATE)
 
 
-# Start thread
-t1 = threading.Thread(target=start_game(), daemon=True)
-t1.start()
+if __name__ == "__main__":
+    # Start thread
+    t1 = threading.Thread(target=start_game(), daemon=True)
+    t1.start()
