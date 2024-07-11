@@ -14,6 +14,7 @@ from settings import *
 from objects.obstacles import SmallCactus, LargeCactus, Bird
 from objects.aiDinosaur import AiDinosaur
 from objects.cloud import Cloud
+from evo import mutate
 
 #init
 pygame.init()
@@ -26,7 +27,7 @@ def main():
     run = True
     clock = pygame.time.Clock()
 
-    agents = [AiDinosaur() for _ in range(1)]
+    agents = [AiDinosaur() for _ in range(10)]
     clouds = [Cloud() for _ in range(3)]
     
     game_speed = 10
@@ -39,24 +40,30 @@ def main():
     obstacles = []
     death_count = 0
     
-    parentCount = 1
+    parentCount = 5
     parents = []
 
    
-    nextDistancePerGenerate = 800
-
-    def score():
+    
+    nextDistancePerGenerate =800
+    nextDistancePerVelocity = 1000
+    nextDistancePerPoint =50
+    
+    def score(nextDistancePerVelocity,nextDistancePerPoint):
         global points, distance, game_speed, highscore
         distance += game_speed
 
         
-        if distance % 50 == 0:
+        if distance >  nextDistancePerPoint:
             points += 1
-
-        if distance % 1000 == 0:
+            nextDistancePerPoint +=50
+        if distance > nextDistancePerVelocity:
             game_speed += 1
+            nextDistancePerVelocity +=1000 
+            print("faster")
 
-        x_pos, y_pos = (760, 40)
+        
+        return nextDistancePerVelocity,nextDistancePerPoint
 
 
     def background():
@@ -94,7 +101,7 @@ def main():
         
         #get input
         for agent in agents:
-            agent.update(obstacles)
+            agent.update(obstacles, game_speed)
         
         #obstacles
         for obstacle in obstacles.copy():
@@ -114,12 +121,12 @@ def main():
             
                     
         #draw call for agents
-        for agent in agents:
-            agent.draw(SCREEN)
+        #for agent in agents:
+            #agent.draw(SCREEN)
         #update score
-        score()        
+        nextDistancePerVelocity,nextDistancePerPoint =score(nextDistancePerVelocity,nextDistancePerPoint)        
         #render frame
-        pygame.display.update()
+        
         #generating 
         
         #switch to menu
@@ -129,8 +136,27 @@ def main():
             menu(death_count)
         """
         clock.tick(FRAME_RATE)
-        
-
+        if len(agents)==0:
+            distance = 1
+            game_speed = 10
+            nextDistancePerGenerate =400
+            nextDistancePerVelocity = 1000
+            nextDistancePerPoint = 50
+            for i,agent in enumerate (parents):
+                
+                agents.append(agent)
+                for j in range(3):
+                    agents.append(AiDinosaur())
+                    g = mutate(agent.genome)
+                    #print(g.all_weights)
+                    #print(g.all_biases)
+                    agents[len(agents)-1].genomeUpdate(g)
+            for i,agent in enumerate (parents):
+                parents.pop()
+            print (agents)       
+              
+        agents[0].draw(SCREEN)  
+        pygame.display.update()
 
 # MARK: Menu
 def menu(death_count):

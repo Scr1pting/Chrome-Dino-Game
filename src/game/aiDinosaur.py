@@ -31,14 +31,15 @@ class AiDinosaur:
         self.rect.x = self.X_POS
         self.rect.y = self.Y_POS
         self.distance = 0
+    def genomeUpdate(self, g):
+        self.genome =g
 
-
-    def update(self, objects):
+    def update(self, objects, game_speed):
         
-        input_values = np.array([float(objects[0].rect.x)/100, float(objects[0].rect.x)/100])
-        print((objects[0].rect.x))
+        input_values = np.array([float(objects[0].rect.x)/100, float(game_speed)/1000])
+        #print((objects[0].rect.x))
         value = predict(self.genome, input_values)
-        print(value)
+        #print(value)
         if self.dino_duck:
             self.duck()
         if self.dino_run:
@@ -49,18 +50,21 @@ class AiDinosaur:
         if self.step_index >= self.CYCLE_LENGTH:
             self.step_index = 0
 
-        if value[1]>value[0] and value[1]>value[2]  and not self.dino_jump:
+        if value[1]>value[0]  and not self.dino_jump:
             self.dino_duck = False
             self.dino_run = False
             self.dino_jump = True
+        elif not self.dino_jump:
+            self.dino_duck = False
+            self.dino_run = True
+            self.dino_jump = False
+        """
         elif value[2]>value[0] and value[2]>value[1] and not self.dino_jump:
             self.dino_duck = True
             self.dino_run = False
             self.dino_jump = False
-        elif not self.dino_jump :
-            self.dino_duck = False
-            self.dino_run = True
-            self.dino_jump = False
+        """
+        
 
     def duck(self):
         self.image = self.duck_img[self.step_index // (self.CYCLE_LENGTH // 2)]
@@ -84,6 +88,7 @@ class AiDinosaur:
         if self.jump_vel < -self.JUMP_VEL:
             self.dino_jump = False
             self.jump_vel = self.JUMP_VEL
+            self.rect.y = self.Y_POS
 
     def dead(self):
         self.image = self.dead_img
