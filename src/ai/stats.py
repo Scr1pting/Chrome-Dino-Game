@@ -11,7 +11,7 @@ def draw_stats(epoch, individuals, max_distance, current_distance):
     text_points = font.render(f"Points: {current_distance // 80}", False, FONT_COLOR)
     text_highscore = font.render(f"Best Score: {max(max_distance, current_distance) // 80} ", False, FONT_COLOR)
 
-    x_pos, y_pos = (760, 40)
+    x_pos, y_pos = (750, 40)
 
     pygame.draw.rect(
         SCREEN,

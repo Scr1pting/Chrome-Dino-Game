@@ -35,7 +35,6 @@ def start_game(genomes, epoch) -> list:
     game = Game()
 
     track = Track()
-    clouds = [Cloud(x=600*i) for i in range(2)]
 
     fitnesses: list = []
 
@@ -45,8 +44,6 @@ def start_game(genomes, epoch) -> list:
         # Background
         track.update(game.speed)
         track.draw(SCREEN)
-
-        draw_clouds(clouds, game.speed)
 
         draw_stats(
             epoch=epoch,
