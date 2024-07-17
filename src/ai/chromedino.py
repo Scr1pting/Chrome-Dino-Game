@@ -5,14 +5,17 @@ import numpy as np
 import math
 
 from game.settings import *
-from game.game_logic import Game, get_game_speed
+from game.game_logic import Game, get_game_speed, next_object_distance
 
 # Object import Cactus, Bird, Cloud
 from game.objects.obstacles import generate_obstacles
 from game.objects.dinosaur import Dinosaur
+from game.objects.cloud import Cloud, draw_clouds
+from game.objects.track import Track
 
 # AI
 from ai.prediction import next_step
+from ai.stats import draw_stats
 
 # Init
 pygame.init()
@@ -25,16 +28,32 @@ class Dinosaur_Agent(Dinosaur):
 
 
 # MARK: Main
-def start_game(genomes) -> list:
+def start_game(genomes, epoch) -> list:
     clock = pygame.time.Clock()
         
     players = [Dinosaur_Agent(genome) for genome in genomes]
     game = Game()
 
+    track = Track()
+    clouds = [Cloud(x=600*i) for i in range(2)]
+
     fitnesses: list = []
 
     while True:
         SCREEN.fill(BACKGROUND_COLOR)
+
+        # Background
+        track.update(game.speed)
+        track.draw(SCREEN)
+
+        draw_clouds(clouds, game.speed)
+
+        draw_stats(
+            epoch=epoch,
+            individuals=len(players),
+            max_distance=max(genomes).score,
+            current_distance=game.distance
+        )
 
         # Get input
         for event in pygame.event.get():
@@ -43,18 +62,17 @@ def start_game(genomes) -> list:
 
         # Progress
         game.distance += game.speed
-
-        if game.distance - game.points * 50 > 50:
-            game.points += 1
         game.speed = get_game_speed(game.distance)
-        
+           
         # Obstacle generation
         if game.distance > game.next_generate_distance:
             generate_obstacles(game.obstacles)
-            game.next_generate_distance += random.randint(500, 1000)
+            game.next_generate_distance = next_object_distance(
+                game.distance, game.speed
+            )
         
         # Prediction
-        for player in players:
+        for player in players.copy():
             if game.obstacles:
                 move = next_step(
                     player.genome,
@@ -86,7 +104,9 @@ def start_game(genomes) -> list:
             # Even works without mask property but slower since it 
             # creates one on the fly from the image attribute.
             if pygame.sprite.collide_mask(player, game.obstacles[0]):
-                player.genome.score = game.distance
+                player.genome.score = max(
+                    player.genome.score, game.distance
+                )
                 fitnesses.append(player.genome)
                 players.remove(player)
                 break
@@ -94,7 +114,7 @@ def start_game(genomes) -> list:
         if players == []:
             return fitnesses
     
-        for obstacle in game.obstacles:
+        for obstacle in game.obstacles.copy():
             obstacle.update(game.speed, game.obstacles)
             obstacle.draw(SCREEN)
         

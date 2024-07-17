@@ -11,7 +11,7 @@ OUTPUT_SIZE = 3
 HIDDEN_LAYERS = 2
 LAYER_SIZE = 16
 
-GENOMES_SIZE = 20
+GENOMES_SIZE = 100
 EPOCHS = 10
 MUTATION_RATE = 0.2
 ELITISM = 0.1
@@ -56,8 +56,8 @@ def create_genome() -> Genome:
 
 
 # MARK: Evolution
-def get_fitness(genomes: list) -> list:
-    return chromedino.start_game(genomes)
+def get_fitness(genomes: list, epoch) -> list:
+    return chromedino.start_game(genomes, epoch)
 
 def select_elite(fitnesses: list[Genome]) -> list[Genome]:
     return sorted(fitnesses, reverse=True)[:math.ceil(ELITISM * len(fitnesses))]
@@ -87,8 +87,8 @@ def mutate(genome: Genome) -> Genome:
 def breed():
     genomes = [create_genome() for _ in range(GENOMES_SIZE)]
 
-    for _ in range(EPOCHS):
-        genomes_with_fitness = get_fitness(genomes)
+    for epoch in range(EPOCHS):
+        genomes_with_fitness = get_fitness(genomes, epoch)
         
         parents = select_parents(genomes_with_fitness)
         new_genomes = select_elite(genomes_with_fitness)

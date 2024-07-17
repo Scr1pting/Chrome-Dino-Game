@@ -3,7 +3,7 @@ import random
 import threading
 import pygame
 
-from game.game_logic import Game, get_game_speed
+from game.game_logic import Game, get_game_speed, next_object_distance
 from game.settings import *
 from game.menus import initial_screen, restart_screen
 from game.scoring import load_highscore, draw_score
@@ -49,20 +49,20 @@ def start_game():
         game.distance += game.speed
         game.frame += 1
 
-        if game.distance - game.points * 50 > 50:
-            game.points += 1
         game.speed = get_game_speed(game.distance)
 
         # Update score display
-        draw_score(highscore, game.points)
+        draw_score(highscore, game.distance)
         
         # Obstacle generation
         if game.distance > game.next_generate_distance:
             generate_obstacles(game.obstacles)
-            game.next_generate_distance += random.randint(500, 1000)
+            game.next_generate_distance = next_object_distance(
+                game.distance, game.speed
+            )
         
         # Update, drawing and collision
-        for obstacle in game.obstacles:
+        for obstacle in game.obstacles.copy():
             # Draw call
             obstacle.update(game.speed, game.obstacles)
             obstacle.draw(SCREEN)
@@ -76,7 +76,6 @@ def start_game():
             player.dead()
             player.draw(SCREEN)
             pygame.display.update()
-            break
         else:
             # Player
             player.update()
