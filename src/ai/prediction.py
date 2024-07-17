@@ -9,6 +9,7 @@ def layer_prediction(
         weights: np.ndarray,
         biases: np.ndarray
     ) -> np.ndarray:
+    weights.shape
     # 1D arrays like input_values are treated as column vectors by np.
     # Therefore, we need to transpose the weights.
     return activation(weights.T @ input_values + biases)

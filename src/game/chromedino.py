@@ -3,6 +3,7 @@ import random
 import threading
 import pygame
 
+from game.game_logic import Game, get_game_speed
 from game.settings import *
 from game.menus import initial_screen, restart_screen
 from game.scoring import load_highscore, draw_score
@@ -15,18 +16,6 @@ from game.objects.track import Track
 
 # Init
 pygame.init()
-
-
-class Game:
-    def __init__(self) -> None:
-        self.speed = 10
-        self.obstacles = []
-
-        self.distance = 0
-        self.points = 0
-        self.is_dead = False
-
-        self.next_generate_distance = 0
 
 
 # MARK: Main
@@ -58,11 +47,11 @@ def start_game():
 
         # Progress
         game.distance += game.speed
+        game.frame += 1
 
         if game.distance - game.points * 50 > 50:
             game.points += 1
-        if game.distance - game.speed * 700 > 700:
-            game.speed += 1
+        game.speed = get_game_speed(game.distance)
 
         # Update score display
         draw_score(highscore, game.points)
@@ -70,24 +59,24 @@ def start_game():
         # Obstacle generation
         if game.distance > game.next_generate_distance:
             generate_obstacles(game.obstacles)
-            game.next_generate_distance += random.randint(450, 900)
+            game.next_generate_distance += random.randint(500, 1000)
         
         # Update, drawing and collision
-        for obstacle in game.obstacles.copy():
+        for obstacle in game.obstacles:
             # Draw call
             obstacle.update(game.speed, game.obstacles)
             obstacle.draw(SCREEN)
-            
-            # Collision detection
-            # Even works without mask property but slower since it 
-            # creates one on the fly from the image attribute.
-            # Other obstacles are not rendered because loop is broken
-            # before.
-            if pygame.sprite.collide_mask(player, obstacle):
-                player.dead()
-                player.draw(SCREEN)
-                pygame.display.update()
-                break
+        
+        # Collision detection
+        # Even works without mask property but slower since it 
+        # creates one on the fly from the image attribute.
+        # Other obstacles are not rendered because loop is broken
+        # before.
+        if pygame.sprite.collide_mask(player, game.obstacles[0]):
+            player.dead()
+            player.draw(SCREEN)
+            pygame.display.update()
+            break
         else:
             # Player
             player.update()

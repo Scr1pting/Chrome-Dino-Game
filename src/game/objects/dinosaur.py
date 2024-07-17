@@ -8,7 +8,7 @@ class Dinosaur:
     X_POS = 80
     Y_POS = 310
     Y_POS_DUCK = 340
-    JUMP_VEL = 8.5
+    JUMP_VEL = 22
     CYCLE_LENGTH = 12
 
     def __init__(self):
@@ -91,11 +91,12 @@ class Dinosaur:
         self.image = self.jump_img
         self.mask = self.jump_mask
         if self.is_jumping:
-            self.rect.y -= int(self.jump_vel * 2.5)
-            self.jump_vel -= 0.5
+            self.rect.y -= int(self.jump_vel)
+            self.jump_vel -= 1.45
         if self.jump_vel < -self.JUMP_VEL:
             self.is_jumping = False
             self.jump_vel = self.JUMP_VEL
+            self.rect.y = self.Y_POS
 
     def dead(self):
         self.is_dead = True

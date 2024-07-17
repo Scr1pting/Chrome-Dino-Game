@@ -1,18 +1,20 @@
+from copy import deepcopy
 import numpy as np
 import random
-from tqdm import tqdm
+import math
 
 import ai.chromedino as chromedino
 
 
 INPUT_SIZE = 4
-OUTPUT_SIZE = 2
+OUTPUT_SIZE = 3
 HIDDEN_LAYERS = 2
-LAYER_SIZE = 8
+LAYER_SIZE = 16
 
-MUTATION_RATE = 0.1
-GENOMES_SIZE = 1_000
-EPOCHS = 1_000
+GENOMES_SIZE = 20
+EPOCHS = 10
+MUTATION_RATE = 0.2
+ELITISM = 0.1
 
 
 # MARK: Genome
@@ -26,9 +28,9 @@ class Genome:
         self.all_weights = all_weights
         self.all_biases = all_biases
         self.score = 0
-    
+
     def __lt__(self, other):
-        return self.score > other.score
+        return self.score < other.score
 
 def create_genome() -> Genome:
     # Three arrays of weights
@@ -57,75 +59,52 @@ def create_genome() -> Genome:
 def get_fitness(genomes: list) -> list:
     return chromedino.start_game(genomes)
 
-def select(fitnesses: list[Genome]) -> list[Genome]:
-    return sorted(fitnesses[-5:], reverse=True)
+def select_elite(fitnesses: list[Genome]) -> list[Genome]:
+    return sorted(fitnesses, reverse=True)[:math.ceil(ELITISM * len(fitnesses))]
 
-
-    probabilities = [fitness / sum(fitnesses) for fitness in fitnesses]
-
+def select_parents(fitnesses: list[Genome]) -> list[Genome]:
+    # Tournament selection
     parents = []
-
-    for _ in range(len(genomes)):
-        # Roulette wheel selection
-        new_index = np.random.choice(
-                range(len(genomes)),
-                p=probabilities
-            )
-        parents.append(genomes[new_index])
-    
+    for _ in range(GENOMES_SIZE):
+        tournament = random.sample(fitnesses, 2)
+        parents.append(max(tournament))
     return parents
-
-def crossover(parent1: Genome, parent2: Genome) -> Genome:
-    all_weights = []
-    all_biases = []
-
-    for i in range(len(parent1.all_weights)):
-        all_weights.append(
-            (parent1.all_weights[i] + parent2.all_weights[i]) / 2
-        )
-
-    for i in range(len(parent1.all_biases)):
-        all_biases.append(
-            (parent1.all_biases[i] + parent2.all_biases[i]) / 2
-        )
-
-    return Genome(all_weights, all_biases)
     
 def mutate(genome: Genome) -> Genome:
     for i, weights in enumerate(genome.all_weights):
         for row in range(len(weights)):
             for col in range(len(weights[row])):
                 if np.random.rand() < MUTATION_RATE:
-                    genome.all_weights[i][row, col] += np.random.normal()
+                    genome.all_weights[i][row, col] += 0.1 * np.random.normal()
     
     for i, biases in enumerate(genome.all_biases):
         for j in range(len(biases)):
             if np.random.rand() < MUTATION_RATE:
-                genome.all_biases[i][j] += np.random.normal()
+                genome.all_biases[i][j] += 0.1 * np.random.normal()
     
     return genome
     
 def breed():
     genomes = [create_genome() for _ in range(GENOMES_SIZE)]
 
-    for i in range(EPOCHS):
-        fitnesses = get_fitness(genomes)
-
-        print(f"Iteration {i}: ", end="")
+    for _ in range(EPOCHS):
+        genomes_with_fitness = get_fitness(genomes)
         
-        parents = select(fitnesses)
-        new_genomes = []
+        parents = select_parents(genomes_with_fitness)
+        new_genomes = select_elite(genomes_with_fitness)
 
-        new_genomes += parents
-
-        for _ in range(GENOMES_SIZE - 5):
-            new_genome = mutate(random.choice(parents))
+        for _ in range(GENOMES_SIZE - len(new_genomes)):
+            # Without deepcopy, the same same genome would be mutated
+            # multiple times, including the genome selected through
+            # elitism.
+            new_genome = mutate(deepcopy(random.choice(parents)))
             new_genome.score = 0
-            new_genomes += [new_genome]
+            new_genomes.append(new_genome)
 
-        # print(f"Max fitness: {max(fitnesses)}")
+        genomes = new_genomes
 
-        genomes = new_genomes      
+    best_genome = max(genomes)
+    print(f"Best genome: {best_genome.id} with score {best_genome.score}")
 
 
 if __name__ == "__main__":
