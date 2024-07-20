@@ -38,18 +38,20 @@ class Dinosaur:
 
 
     def update(self):
+        #Executing states
         if self.is_ducked:
             self.duck()
         if self.is_running:
             self.run()
         if self.is_jumping:
             self.jump()
-
+        #Step cycle 
         if self.step_index >= self.CYCLE_LENGTH:
             self.step_index = 0
-
+        #Get the input of user
         user_input = pygame.key.get_pressed()
-
+        
+        #If block for setting the states
         if (user_input[pygame.K_UP] or user_input[pygame.K_SPACE]) and not self.is_jumping:
             self.is_ducked = False
             self.is_running = False
@@ -89,10 +91,10 @@ class Dinosaur:
 
     def jump(self):
         self.image = self.jump_img
-        self.mask = self.jump_mask
-        if self.is_jumping:
-            self.rect.y -= int(self.jump_vel)
-            self.jump_vel -= 1.45
+        self.mask = self.jump_mask        
+        self.rect.y -= int(self.jump_vel)
+        self.jump_vel -= 1.45
+        #If statement based on simple phycics (mirrored velocity at starting position)
         if self.jump_vel < -self.JUMP_VEL:
             self.is_jumping = False
             self.jump_vel = self.JUMP_VEL
