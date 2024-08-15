@@ -75,7 +75,6 @@ def start_game(genomes, epoch) -> list:
                     player.genome,
                     np.array([
                         game.speed,
-                        player.rect.y,
                         game.obstacles[0].rect.x,
                         game.obstacles[0].rect.y
                 ]))

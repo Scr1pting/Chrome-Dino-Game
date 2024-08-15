@@ -6,13 +6,13 @@ import math
 import ai.chromedino as chromedino
 
 
-INPUT_SIZE = 4
+INPUT_SIZE = 3
 OUTPUT_SIZE = 3
 HIDDEN_LAYERS = 2
 LAYER_SIZE = 16
 
 GENOMES_SIZE = 100
-EPOCHS = 10
+EPOCHS = 20
 MUTATION_RATE = 0.2
 ELITISM = 0.1
 
@@ -104,7 +104,7 @@ def breed():
         genomes = new_genomes
 
     best_genome = max(genomes)
-    print(f"Best genome: {best_genome.id} with score {best_genome.score}")
+    print(f"Best score {best_genome.score}")
 
 
 if __name__ == "__main__":
