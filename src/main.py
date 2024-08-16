@@ -1,6 +1,4 @@
-# from game.chromedino import start_game
-from ai.evo import breed
+from game.chromedino import start_game
 
 if __name__ == "__main__":
-    # start_game()
-    breed()
+    start_game()
