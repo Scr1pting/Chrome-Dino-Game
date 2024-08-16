@@ -1,30 +1,32 @@
-import pygame
 import os
+import pygame
 
 from game.settings import *
 
 
-def load_highscore() -> int:
-    current_script_dir = os.path.dirname(__file__)
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Highscore file for memory
+
+def load_highscore() -> int:
+    try:
+        with open(
+            os.path.join(current_script_dir, "../../highscore.txt"),
+            "r"
+        ) as f:
+            return int(f.read().strip())
+    except:
+        return 0
+
+def save_score(score: int):
     with open(
         os.path.join(current_script_dir, "../../highscore.txt"),
-        "r"
+        "w"
     ) as f:
-        try:
-            return int(f.read().strip())
-        except:
-            return 0
+        f.write(str(score))
 
 
-def draw_score(highscore, distance):
+def draw_score(highscore, points):
     font = pygame.font.Font(FONT_FAMILY, 20)
-    points = distance // 80
-    
-    if points > highscore:
-        with open("../highscore.txt", "w") as f:
-            f.write(str(points))
     
     text_highscore = font.render(f"HI: {str(highscore).zfill(5)} ", False, FONT_COLOR_LIGHT)
     text_points = font.render(str(points).zfill(5), False, FONT_COLOR)

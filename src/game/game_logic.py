@@ -15,10 +15,16 @@ class Game:
 
         self.next_generate_distance = 0
 
-#Returns the speed based on equation (square root) with clamping
+    @property
+    def points(self) -> int:
+        return self.distance // 80
+
+
 def get_game_speed(distance: int) -> int:
+    """Returns the speed based on equation (square root) with clamping"""
     return min(MAX_SPEED, int(math.sqrt(distance // 700) + INITIAL_SPEED))
 
-#Returns the distance for generation of new objects
+
 def next_object_distance(distance: int, game_speed: int) -> int:
+    """Returns the distance for generation of new objects"""
     return distance + random.randint(300 + game_speed * 20, 1000)

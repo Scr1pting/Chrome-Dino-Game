@@ -1,12 +1,11 @@
 # Lib
-import random
 import threading
 import pygame
 
 from game.game_logic import Game, get_game_speed, next_object_distance
 from game.settings import *
 from game.menus import initial_screen, restart_screen
-from game.scoring import load_highscore, draw_score
+from game.scoring import load_highscore, save_score, draw_score
 
 # Object import Cactus, Bird, Cloud
 from game.objects.obstacles import generate_obstacles
@@ -26,10 +25,13 @@ def start_game():
     track = Track()
     clouds = [Cloud(x=600*i) for i in range(2)]
     
+    # highscore = load_highscore()
     highscore = load_highscore()
     initial_screen(highscore)
 
     game = Game()
+
+    i = 0
 
     while True:
         SCREEN.fill(BACKGROUND_COLOR)
@@ -51,8 +53,12 @@ def start_game():
 
         game.speed = get_game_speed(game.distance)
 
-        # Update score display
-        draw_score(highscore, game.distance)
+        # Scoring
+        if game.points > highscore:
+            highscore = game.points
+            save_score(game.points)
+
+        draw_score(highscore, game.points)
         
         # Obstacle generation
         if game.distance > game.next_generate_distance:
@@ -77,7 +83,6 @@ def start_game():
             player.draw(SCREEN)
             pygame.display.update()
         else:
-            # Player
             player.update()
             player.draw(SCREEN)
 
@@ -91,8 +96,16 @@ def start_game():
                         game = Game()
                         player.is_dead = False
                         break
+
+                pygame.image.save(SCREEN, f"screenshot_{str(i).zfill(5)}.jpg")
+                i += 1
+                clock.tick(FRAME_RATE)
         
         pygame.display.update()
+
+        pygame.image.save(SCREEN, f"screenshot_{str(i).zfill(5)}.jpg")
+        i += 1
+        
         clock.tick(FRAME_RATE)
 
 
