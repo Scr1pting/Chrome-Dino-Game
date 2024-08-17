@@ -31,8 +31,6 @@ def start_game():
 
     game = Game()
 
-    i = 0
-
     while True:
         SCREEN.fill(BACKGROUND_COLOR)
 
@@ -97,8 +95,6 @@ def start_game():
                         player.is_dead = False
                         break
 
-                pygame.image.save(SCREEN, f"screenshot_{str(i).zfill(5)}.jpg")
-                i += 1
                 clock.tick(FRAME_RATE)
         
         pygame.display.update()
