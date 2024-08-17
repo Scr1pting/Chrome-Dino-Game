@@ -23,19 +23,20 @@ However, this project includes major improvements:
 - More than one obstacle per frame
 
 
-# Extensability
+# Extensibility
 
-This project makes it easy to extend it because of its simple file
-structure. It is especially well-suited for machine learning
+This project is easy to extend because of its simple file structure.
+It is therefore especially well-suited for machine learning
 applications.
 
 To do that, create a new folder in `src` that includes a custom
 implementation of `chromedino.py`. Since the other game elements are
-each contained in their own files, they can easily be imported. Then
+each contained in their own files, they can easily be imported. Then,
 update the `main.py` file to start your extension.
 
 A sample machine learning implementation is available at [Scr1pting/Chrome-Dino-AI](https://github.com/Scr1pting/Chrome-Dino-AI).
-Have fun exploring!
+It uses a neural network that is updated by an evolutionary algorithm
+to master the game.
 
 
 ## Run
