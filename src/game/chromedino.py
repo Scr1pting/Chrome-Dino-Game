@@ -102,9 +102,6 @@ def start_game():
                 clock.tick(FRAME_RATE)
         
         pygame.display.update()
-
-        pygame.image.save(SCREEN, f"screenshot_{str(i).zfill(5)}.jpg")
-        i += 1
         
         clock.tick(FRAME_RATE)
 
